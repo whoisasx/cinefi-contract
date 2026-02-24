@@ -2,6 +2,16 @@ use anchor_lang::prelude::*;
 use crate::{errors::ErrorCode, states::*};
 
 pub fn close_market(ctx:Context<CloseMarket>)->Result<()>{
+  let clock=Clock::get()?;
+  let now=clock.unix_timestamp;
+
+  let market=&mut ctx.accounts.market;
+  require!(!market.closed, ErrorCode::MarketAlreadyClosed);
+  require!(!market.resolved, ErrorCode::MarketAlreadyResolved);
+  require!(now >= market.betting_closes_at, ErrorCode::BettingStillOpen);
+
+  market.closed=true;
+  
   Ok(())
 }
 
