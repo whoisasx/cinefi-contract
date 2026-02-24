@@ -13,7 +13,7 @@ pub fn is_winner(
   let distance=(bucket as i16 - final_outcome as i16).unsigned_abs() as u8;
 
   if !fallback_used{
-    return radius <= distance;
+    return distance <= radius;
   }
 
   //now the fallback is used;

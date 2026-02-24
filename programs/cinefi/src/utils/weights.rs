@@ -49,12 +49,12 @@ pub fn compute_bucket_prizes(
     0
   };
 
-  let is_winnig_bucket=|i:usize| ->bool{
+  let is_winning_bucket=|i:usize| ->bool{
     if weighted_pool[i]==0 {
       return false;
     }
 
-    let distance= (i as i16 - f) as u8;
+    let distance= (i as i16 - f).unsigned_abs() as u8;
     if fallback_used{
       distance == fallback_min_distance
     }
@@ -65,7 +65,7 @@ pub fn compute_bucket_prizes(
 
   //compute TBW: total bucket weight across all winners.
   let tbw:u128=(1..MAX_BUCKETS)
-  .filter(|&i| is_winnig_bucket(i))
+  .filter(|&i| is_winning_bucket(i))
   .map(|i| {
     let cw=closeness_weight(i as u8, final_outcome);
     cw.saturating_mul(weighted_pool[i] as u128)
@@ -77,7 +77,7 @@ pub fn compute_bucket_prizes(
   }
 
   for i in 1..MAX_BUCKETS{
-    if is_winnig_bucket(i) {
+    if is_winning_bucket(i) {
       let cw=closeness_weight(i as u8, final_outcome);
       let bw=cw.saturating_mul(weighted_pool[i] as u128);
 
