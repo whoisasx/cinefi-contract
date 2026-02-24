@@ -13,7 +13,7 @@ pub fn create_market(
   let clock=Clock::get()?;
   let now=clock.unix_timestamp;
 
-  require!(oracle_threshold > 1 && oracle_threshold <= 3, ErrorCode::UnauthorizedOracle);
+  require!(oracle_threshold > 1 && oracle_threshold <= 3, ErrorCode::InvalidOracleThreshold);
 
   let buffer_time= match betting_starts_after{
     Some(t)=>t,

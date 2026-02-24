@@ -12,7 +12,7 @@ pub fn submit_score(ctx:Context<SubmitScore>, score: u8)->Result<()>{
 
   require!(market.closed,ErrorCode::MarketNotClosed);
   require!(!market.resolved,ErrorCode::MarketAlreadyResolved);
-  require!(market.settle_at+ORACLE_WINDOWS_START_SECONDS<=now && now<=market.settle_at+ORACLE_WINDOWS_CLOSE_SECONDS, ErrorCode::SettlementTimeInvalid);
+  require!(market.settle_at+ORACLE_WINDOWS_START_SECONDS<=now && now<=market.settle_at+ORACLE_WINDOWS_CLOSE_SECONDS, ErrorCode::OracleWindowClosed);
   require!(0<score && score<=100, ErrorCode::InvalidBucket);
 
   require!(

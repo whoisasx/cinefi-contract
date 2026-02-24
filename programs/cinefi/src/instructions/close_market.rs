@@ -23,7 +23,7 @@ pub struct CloseMarket<'info>{
 
   #[account(
     mut,
-    seeds=[MARKET_SEED, &market.key().as_ref()],
+    seeds=[MARKET_SEED, &market.media_id.to_le_bytes()],
     bump=market.bump,
     constraint = !market.closed
       @ErrorCode::MarketAlreadyClosed,

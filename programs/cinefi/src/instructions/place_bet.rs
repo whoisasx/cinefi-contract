@@ -10,7 +10,7 @@ pub fn place_bet(ctx:Context<PlaceBet>, bucket: u8, amount: u64)->Result<()>{
   let market=&mut ctx.accounts.market;
   let user_position=&mut ctx.accounts.user_position;
 
-  require!(amount > MINIMUM_STAKE_AMOUNT , ErrorCode::InvalidAmount);
+  require!( amount > MINIMUM_STAKE_AMOUNT , ErrorCode::InvalidAmount);
   require!(!market.closed, ErrorCode::MarketAlreadyClosed);
   require!(!market.resolved, ErrorCode::MarketAlreadyResolved);
   require!(now <= market.betting_closes_at, ErrorCode::BettingClosed);
