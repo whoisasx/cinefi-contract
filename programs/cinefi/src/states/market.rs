@@ -19,13 +19,13 @@ pub struct Market{
   pub oracle_set: [Pubkey; 3],
   pub oracle_threshold: u8,
 
-  pub pool: [u64; 100],
-  pub weighted_pool: [u64; 100],
+  pub pool: [u64; 101],
+  pub weighted_pool: [u64; 101],
   pub total_pool: u64,
   pub total_prize_pool: u64,
 
   pub final_outcome: u8,
-  pub bucket_price: [u64; 100],
+  pub bucket_price: [u64; 101],
   pub fallback_used: bool,
 
   pub resolved: bool,
