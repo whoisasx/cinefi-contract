@@ -30,6 +30,9 @@ pub enum ErrorCode{
   #[msg("settlement time not reached yet")]
   SettlementNotReady,
 
+  #[msg("seltlement time is not valid")]
+  SettlementTimeInvalid,
+
   #[msg("claim deadline is passed")]
   ClaimDeadlinePassed,
 
