@@ -30,7 +30,7 @@ pub enum ErrorCode{
   #[msg("settlement time not reached yet")]
   SettlementNotReady,
 
-  #[msg("seltlement time is not valid")]
+  #[msg("settlement time is not valid")]
   SettlementTimeInvalid,
 
   #[msg("claim deadline is passed")]
@@ -45,6 +45,9 @@ pub enum ErrorCode{
 
   #[msg("signer is not in the oracle set")]
   UnauthorizedOracle,
+
+  #[msg("invalid oracle threshold")]
+  InvalidOracleThreshold,
 
   #[msg("oracle report is finalized already")]
   OracleAlreadyFinalized,
@@ -62,7 +65,7 @@ pub enum ErrorCode{
   #[msg("invalid bucket: must be from 1 to 100")]
   InvalidBucket,
 
-  #[msg("bet amount must be greater than zero")]
+  #[msg("bet amount must be greater than zero dollar")]
   InvalidAmount,
 
   #[msg("reward already claimed")]
