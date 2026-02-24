@@ -24,7 +24,7 @@ pub const DEFAULT_RADIUS: u8=5;
 pub const DEFAULT_PROTOCOL_FEE_BPS: u16=300;
 pub const DEFAULT_CREATOR_FEE_BPS: u16=0;
 pub const MAX_ORACLE_SIGNER: usize=3;
-pub const MAX_BUCKETS: usize=100;
+pub const MAX_BUCKETS: usize=101;
 
 pub const ORACLE_WINDOWS_START_SECONDS: i64=0;
 pub const ORACLE_WINDOWS_CLOSE_SECONDS: i64=3_600;

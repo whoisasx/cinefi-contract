@@ -25,7 +25,7 @@ pub struct Market{
   pub total_prize_pool: u64,
 
   pub final_outcome: u8,
-  pub bucket_price: [u64; 101],
+  pub bucket_prize: [u64; 101],
   pub fallback_used: bool,
 
   pub resolved: bool,
