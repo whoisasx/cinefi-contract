@@ -1,7 +1,45 @@
 use anchor_lang::prelude::*;
+use anchor_lang::system_program::{Transfer, transfer};
 use crate::{errors::ErrorCode, states::*};
+use crate::utils::*;
 
 pub fn claim_reward(ctx:Context<ClaimReward>)->Result<()>{
+  let market=&mut ctx.accounts.market;
+  let user_position=&mut ctx.accounts.user_position;
+
+  require!(market.resolved, ErrorCode::MarketNotResolved);
+  require!(!user_position.claimed, ErrorCode::AlreadyClaimed);
+
+  require!(
+    is_winner(user_position.bucket, market.final_outcome, market.radius, market.fallback_used, &market.pool),
+    ErrorCode::NotAWinner
+  );
+
+  let payout=calc_user_payout(user_position.weighted_amount, user_position.bucket, &market.bucket_prize, &market.weighted_pool)?;
+
+  require!(payout>0,ErrorCode::InsufficientClaimAmount);
+
+  user_position.claimed=true;
+
+  let market_key=market.key();
+  let vault_bump=ctx.bumps.vault;
+  let market_key_seeds=market_key.as_array();
+  let bump_seeds=&[vault_bump];
+  let vault_seeds: &[&[u8]]=&[VAULT_SEED,market_key_seeds,bump_seeds];
+  let signer_seeds: &[&[&[u8]]] = &[vault_seeds];
+
+  transfer(
+    CpiContext::new_with_signer(
+      ctx.accounts.system_program.to_account_info(),
+      Transfer {
+        from: ctx.accounts.vault.to_account_info(),
+        to: ctx.accounts.user.to_account_info(),
+      },
+      signer_seeds,
+    ),
+    payout,
+  )?;
+
   Ok(())
 }
 
