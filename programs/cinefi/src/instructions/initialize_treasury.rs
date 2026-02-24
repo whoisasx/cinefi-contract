@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use crate::states::*;
 
-pub fn initialize_treasury(ctx:Context<InitializeTreasury>)->Result<()>{
+pub fn initialize_treasury(_ctx:Context<InitializeTreasury>)->Result<()>{
   Ok(())
 }
 #[derive(Accounts)]
