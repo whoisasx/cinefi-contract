@@ -26,9 +26,9 @@ pub fn create_market(
 
   market.created_at=now;
   market.betting_starts_at= now+buffer_time;
-  market.betting_closes_at= market.betting_starts_at + (14*SECONDS_PER_DAY);
-  market.settle_at= market.betting_closes_at + (7*SECONDS_PER_DAY);
-  market.claim_deadline= market.settle_at +(14*SECONDS_PER_DAY);
+  market.betting_closes_at= market.betting_starts_at + (BETTING_DURATION_DAYS*SECONDS_PER_DAY);
+  market.settle_at= market.betting_closes_at + ((SETTLEMENT_DAY-BETTING_DURATION_DAYS)*SECONDS_PER_DAY);
+  market.claim_deadline= market.settle_at +(CLAIM_WINDOW_DAYS*SECONDS_PER_DAY);
 
   market.radius=radius;
   market.protocol_fee_bps=DEFAULT_PROTOCOL_FEE_BPS;
