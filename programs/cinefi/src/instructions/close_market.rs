@@ -10,7 +10,7 @@ pub struct CloseMarket<'info>{
   #[account(
     mut,
     seeds=[MARKET_SEED, &market.key().as_ref()],
-    bump,
+    bump=market.bump,
     constraint = !market.closed
       @ErrorCode::MarketAlreadyClosed,
     constraint = Clock::get()?.unix_timestamp >= market.betting_closes_at

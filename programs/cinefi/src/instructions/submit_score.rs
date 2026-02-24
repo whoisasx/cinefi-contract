@@ -21,7 +21,7 @@ pub struct SubmitScore<'info>{
 
   #[account(
     mut,
-    seeds=[],
+    seeds=[ORACLE_REPORT_SEED, market.key().as_ref()],
     bump=oracle_report.bump,
     constraint= !oracle_report.finalized
       @ErrorCode::OracleAlreadyFinalized,
