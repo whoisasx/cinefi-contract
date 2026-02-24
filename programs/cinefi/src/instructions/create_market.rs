@@ -1,6 +1,16 @@
 use anchor_lang::prelude::*;
 use crate::states::*;
 
+pub fn create_market(
+  ctx: Context<CreateMarket>,
+  media_id: u64,
+  radius: u8,
+  oracle_set: [Pubkey; 3],
+  oracle_threshold: u8,
+)->Result<()>{
+  Ok(())
+}
+
 
 #[derive(Accounts)]
 #[instruction(media_id: u64)]

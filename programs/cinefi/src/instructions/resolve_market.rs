@@ -2,6 +2,10 @@ use anchor_lang::prelude::*;
 use crate::states::*;
 use crate::errors::ErrorCode;
 
+pub fn resolve_market(ctx:Context<ResolveMarket>)->Result<()>{
+  Ok(())
+}
+
 #[derive(Accounts)]
 pub struct ResolveMarket<'info>{
   #[account(mut)]

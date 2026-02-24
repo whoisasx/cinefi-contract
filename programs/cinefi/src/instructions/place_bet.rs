@@ -1,6 +1,10 @@
 use anchor_lang::prelude::*;
 use crate::{errors::ErrorCode, states::*};
 
+pub fn place_bet(ctx:Context<PlaceBet>, bucket: u8, amount: u64)->Result<()>{
+  Ok(())
+}
+
 #[derive(Accounts)]
 #[instruction(bucket: u8, amount: u64)]
 pub struct PlaceBet<'info>{

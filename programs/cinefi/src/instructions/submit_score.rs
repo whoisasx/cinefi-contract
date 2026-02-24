@@ -2,6 +2,10 @@ use anchor_lang::prelude::*;
 use crate::states::*;
 use crate::errors::ErrorCode;
 
+pub fn submit_score(ctx:Context<SubmitScore>, score: u8)->Result<()>{
+  Ok(())
+}
+
 #[derive(Accounts)]
 pub struct SubmitScore<'info>{
   #[account(mut)]

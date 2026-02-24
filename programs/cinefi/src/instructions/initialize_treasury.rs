@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
 use crate::states::*;
 
+pub fn initialize_treasury(ctx:Context<InitializeTreasury>)->Result<()>{
+  Ok(())
+}
 #[derive(Accounts)]
 pub struct InitializeTreasury<'info>{
   #[account(mut)]

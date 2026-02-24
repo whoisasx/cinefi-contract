@@ -1,6 +1,10 @@
 use anchor_lang::prelude::*;
 use crate::{errors::ErrorCode, states::*};
 
+pub fn claim_reward(ctx:Context<ClaimReward>)->Result<()>{
+  Ok(())
+}
+
 #[derive(Accounts)]
 pub struct ClaimReward<'info>{
   #[account(mut)]

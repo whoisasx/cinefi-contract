@@ -2,6 +2,10 @@ use anchor_lang::prelude::*;
 use crate::states::*;
 use crate::errors::ErrorCode;
 
+pub fn reclaim_pool(ctx:Context<ReclaimPool>)->Result<()>{
+  Ok(())
+}
+
 #[derive(Accounts)]
 pub struct ReclaimPool<'info>{
   #[account(mut)]
