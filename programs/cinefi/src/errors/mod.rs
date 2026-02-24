@@ -59,7 +59,7 @@ pub enum ErrorCode{
   OracleDisputed,
 
 
-  #[msg("invalid bucket: must be 0-99")]
+  #[msg("invalid bucket: must be from 1 to 100")]
   InvalidBucket,
 
   #[msg("bet amount must be greater than zero")]
@@ -67,6 +67,9 @@ pub enum ErrorCode{
 
   #[msg("reward already claimed")]
   AlreadyClaimed,
+
+  #[msg("insufficient reward amount")]
+  InsufficientClaimAmount,
 
   #[msg("user is not a winner - bucket outside winning radius")]
   NotAWinner,
