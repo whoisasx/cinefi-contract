@@ -9,7 +9,7 @@ pub struct SubmitScore<'info>{
 
   #[account(
     seeds=[MARKET_SEED, &market.media_id.to_le_bytes()],
-    bump,
+    bump=market.bump,
     constraint= market.closed
       @ErrorCode::MarketNotClosed,
     constraint= !market.resolved
@@ -19,7 +19,15 @@ pub struct SubmitScore<'info>{
   )]
   pub market:Account<'info,Market>,
 
-  #[account()]
+  #[account(
+    mut,
+    seeds=[],
+    bump=oracle_report.bump,
+    constraint= !oracle_report.finalized
+      @ErrorCode::OracleAlreadyFinalized,
+    constraint= !oracle_report.disputed
+      @ErrorCode::OracleDisputed
+  )]
   pub oracle_report: Account<'info, OracleReport>,
 
   pub system_program: Program<'info, System>
