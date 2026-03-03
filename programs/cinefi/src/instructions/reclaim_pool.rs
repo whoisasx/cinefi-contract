@@ -55,7 +55,6 @@ pub struct ReclaimPool<'info>{
   )]
   pub market: Account<'info ,Market>,
 
-  /// CHECK: This is a PDA vault derived from VAULT_SEED and the market key. It holds lamports and is validated by its seeds and bump.
   #[account(
     mut,
     seeds=[VAULT_SEED, market.key().as_ref()],
@@ -63,7 +62,6 @@ pub struct ReclaimPool<'info>{
   )]
   pub vault: UncheckedAccount<'info>,
 
-  /// CHECK: This is a PDA vault derived from TREASURY_SEED. It holds lamports and is validated by its seeds and bump.
   #[account(
     mut,
     seeds=[TREASURY_SEED],

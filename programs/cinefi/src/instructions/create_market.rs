@@ -77,7 +77,6 @@ pub struct CreateMarket<'info>{
   )]
   pub market: Account<'info, Market>,
 
-  /// CHECK: This is a PDA vault derived from VAULT_SEED and the market key. It holds lamports and is validated by its seeds and bump.
   #[account(
     init,
     payer=creator,

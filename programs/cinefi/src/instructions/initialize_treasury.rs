@@ -9,7 +9,6 @@ pub struct InitializeTreasury<'info>{
   #[account(mut)]
   pub authority: Signer<'info>,
 
-  /// CHECK: This is a PDA vault derived from TREASURY_SEED. It holds lamports and is validated by its seeds and bump.
   #[account(
     init,
     payer=authority,

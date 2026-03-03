@@ -78,7 +78,6 @@ pub struct PlaceBet<'info>{
   )]
   pub user_position: Account<'info, UserPosition>,
 
-  /// CHECK: This is a PDA vault derived from VAULT_SEED and the market key. It holds lamports and is validated by its seeds and bump.
   #[account(
     mut,
     seeds=[VAULT_SEED, market.key().as_ref()],
