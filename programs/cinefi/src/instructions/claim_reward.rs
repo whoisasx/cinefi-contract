@@ -56,7 +56,7 @@ pub struct ClaimReward<'info>{
     constraint= Clock::get()?.unix_timestamp <= market.claim_deadline
       @ErrorCode::ClaimDeadlinePassed
   )]
-  pub market: Account<'info,Market>,
+  pub market: Box<Account<'info,Market>>,
 
   #[account(
     mut,
@@ -75,6 +75,7 @@ pub struct ClaimReward<'info>{
     seeds=[VAULT_SEED, market.key().as_ref()],
     bump
   )]
+  /// CHECK: PDA vault account. Safety verified by seeds constraint.
   pub vault: UncheckedAccount<'info>,
 
   pub system_program: Program<'info,System>

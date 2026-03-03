@@ -70,7 +70,7 @@ pub struct ResolveMarket<'info>{
     constraint= Clock::get()?.unix_timestamp >= market.settle_at
       @ErrorCode::SettlementNotReady
   )]
-  pub market: Account<'info, Market>,
+  pub market: Box<Account<'info, Market>>,
 
   #[account(
     seeds=[ORACLE_REPORT_SEED, market.key().as_ref()],
@@ -78,13 +78,14 @@ pub struct ResolveMarket<'info>{
     constraint= oracle_report.finalized
       @ErrorCode::OracleNotFinalized
   )]
-  pub oracle_report: Account<'info, OracleReport>,
+  pub oracle_report: Box<Account<'info, OracleReport>>,
 
   #[account(
     mut,
     seeds=[VAULT_SEED, market.key().as_ref()],
     bump
   )]
+  /// CHECK: PDA vault account. Safety verified by seeds constraint.
   pub vault: UncheckedAccount<'info>,
 
   #[account(
@@ -92,6 +93,7 @@ pub struct ResolveMarket<'info>{
     seeds=[TREASURY_SEED],
     bump
   )]
+  /// CHECK: PDA treasury account. Safety verified by seeds constraint.
   pub treasury: UncheckedAccount<'info>,
 
   pub system_program: Program<'info, System>

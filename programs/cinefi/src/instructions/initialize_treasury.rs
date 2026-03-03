@@ -16,6 +16,7 @@ pub struct InitializeTreasury<'info>{
     seeds=[TREASURY_SEED],
     bump
   )]
+  /// CHECK: PDA treasury account. Safety verified by seeds constraint.
   pub treasury: UncheckedAccount<'info>,
 
   pub system_program: Program<'info, System>,

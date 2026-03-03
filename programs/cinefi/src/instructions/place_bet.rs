@@ -65,7 +65,7 @@ pub struct PlaceBet<'info>{
     constraint = Clock::get()?.unix_timestamp <= market.betting_closes_at
       @ErrorCode::BettingClosed
   )]
-  pub market: Account<'info, Market>,
+  pub market: Box<Account<'info, Market>>,
 
   #[account(
     init_if_needed,
@@ -83,6 +83,7 @@ pub struct PlaceBet<'info>{
     seeds=[VAULT_SEED, market.key().as_ref()],
     bump
   )]
+  /// CHECK: PDA vault account. Safety verified by seeds constraint.
   pub vault: UncheckedAccount<'info>,
 
   pub system_program: Program<'info, System>

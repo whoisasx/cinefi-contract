@@ -55,7 +55,7 @@ pub struct SubmitScore<'info>{
     constraint= market.oracle_set.contains(oracle_signer.key)
       @ErrorCode::UnauthorizedOracle
   )]
-  pub market:Account<'info,Market>,
+  pub market:Box<Account<'info,Market>>,
 
   #[account(
     mut,
@@ -66,7 +66,7 @@ pub struct SubmitScore<'info>{
     constraint= !oracle_report.disputed
       @ErrorCode::OracleDisputed
   )]
-  pub oracle_report: Account<'info, OracleReport>,
+  pub oracle_report: Box<Account<'info, OracleReport>>,
 
   pub system_program: Program<'info, System>
 }

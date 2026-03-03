@@ -30,5 +30,5 @@ pub struct CloseMarket<'info>{
     constraint = Clock::get()?.unix_timestamp >= market.betting_closes_at
       @ErrorCode::BettingStillOpen
   )]
-  pub market: Account<'info, Market>
+  pub market: Box<Account<'info, Market>>
 }

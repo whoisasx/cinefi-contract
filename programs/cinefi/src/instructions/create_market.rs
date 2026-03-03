@@ -75,7 +75,7 @@ pub struct CreateMarket<'info>{
     seeds=[MARKET_SEED, &media_id.to_le_bytes()],
     bump
   )]
-  pub market: Account<'info, Market>,
+  pub market: Box<Account<'info, Market>>,
 
   #[account(
     init,
@@ -84,6 +84,7 @@ pub struct CreateMarket<'info>{
     seeds=[VAULT_SEED, market.key().as_ref()],
     bump
   )]
+  /// CHECK: PDA vault account. Safety verified by seeds constraint.
   pub vault: UncheckedAccount<'info>,
 
   #[account(
@@ -93,7 +94,7 @@ pub struct CreateMarket<'info>{
     seeds=[ORACLE_REPORT_SEED, market.key().as_ref()],
     bump
   )]
-  pub oracle_report: Account<'info, OracleReport>,
+  pub oracle_report: Box<Account<'info, OracleReport>>,
 
   pub system_program: Program<'info, System>
 }

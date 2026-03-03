@@ -53,13 +53,14 @@ pub struct ReclaimPool<'info>{
     constraint= Clock::get()?.unix_timestamp >= market.claim_deadline
       @ErrorCode::ClaimDeadlineNotPassed
   )]
-  pub market: Account<'info ,Market>,
+  pub market: Box<Account<'info, Market>>,
 
   #[account(
     mut,
     seeds=[VAULT_SEED, market.key().as_ref()],
     bump
   )]
+  /// CHECK: PDA vault account. Safety verified by seeds constraint.
   pub vault: UncheckedAccount<'info>,
 
   #[account(
@@ -67,6 +68,7 @@ pub struct ReclaimPool<'info>{
     seeds=[TREASURY_SEED],
     bump
   )]
+  /// CHECK: PDA treasury account. Safety verified by seeds constraint.
   pub treasury: UncheckedAccount<'info>,
 
   pub system_program: Program<'info,System>
