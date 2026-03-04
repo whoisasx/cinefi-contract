@@ -63,7 +63,7 @@ pub fn create_market(
 
 
 #[derive(Accounts)]
-#[instruction(media_id: u64)]
+#[instruction(betting_starts_after: Option<i64>, media_id: u64)]
 pub struct CreateMarket<'info>{
   #[account(mut)]
   pub creator: Signer<'info>,

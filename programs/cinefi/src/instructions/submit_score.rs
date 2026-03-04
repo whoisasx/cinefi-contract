@@ -25,7 +25,7 @@ pub fn submit_score(ctx:Context<SubmitScore>, score: u8)->Result<()>{
   );
 
   let idx=oracle_report.submission_count as usize;
-  oracle_report.submissions[idx]=(ctx.accounts.oracle_signer.key(), score);
+  oracle_report.submissions[idx]=OracleSubmission { signer: ctx.accounts.oracle_signer.key(), score };
   oracle_report.submission_count+=1;
 
   let(finalized,disputed,agreed_score)=evaluate_report(oracle_report,market.oracle_threshold);
