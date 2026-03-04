@@ -1,7 +1,7 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AnchorProvider, Program, Wallet } from "@coral-xyz/anchor";
-import type { Cinefi } from "./types";
-import IDL from "../../target/idl/cinefi.json";
+import type { Cinefi } from "./cinefi";
+import IDL from "./cinefi.json";
 
 export * from "./pdas";
 export * from "./constants";

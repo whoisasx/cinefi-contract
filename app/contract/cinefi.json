@@ -1,0 +1,873 @@
+{
+	"address": "GomtSs5546sx4NQFsGaJtwFrDytfqRQPBADkiUr7PcyW",
+	"metadata": {
+		"name": "cinefi",
+		"version": "0.1.0",
+		"spec": "0.1.0",
+		"description": "Created with Anchor"
+	},
+	"instructions": [
+		{
+			"name": "claim_reward",
+			"discriminator": [149, 95, 181, 242, 94, 90, 158, 162],
+			"accounts": [
+				{
+					"name": "user",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "market",
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									109, 97, 114, 107, 101, 116, 95, 115, 101,
+									101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market.media_id",
+								"account": "Market"
+							}
+						]
+					}
+				},
+				{
+					"name": "user_position",
+					"writable": true
+				},
+				{
+					"name": "vault",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									118, 97, 117, 108, 116, 95, 115, 101, 101,
+									100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market"
+							}
+						]
+					}
+				},
+				{
+					"name": "system_program",
+					"address": "11111111111111111111111111111111"
+				}
+			],
+			"args": []
+		},
+		{
+			"name": "close_market",
+			"discriminator": [88, 154, 248, 186, 48, 14, 123, 244],
+			"accounts": [
+				{
+					"name": "caller",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "market",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									109, 97, 114, 107, 101, 116, 95, 115, 101,
+									101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market.media_id",
+								"account": "Market"
+							}
+						]
+					}
+				}
+			],
+			"args": []
+		},
+		{
+			"name": "create_market",
+			"discriminator": [103, 226, 97, 235, 200, 188, 251, 254],
+			"accounts": [
+				{
+					"name": "creator",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "market",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									109, 97, 114, 107, 101, 116, 95, 115, 101,
+									101, 100
+								]
+							},
+							{
+								"kind": "arg",
+								"path": "media_id"
+							}
+						]
+					}
+				},
+				{
+					"name": "vault",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									118, 97, 117, 108, 116, 95, 115, 101, 101,
+									100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market"
+							}
+						]
+					}
+				},
+				{
+					"name": "oracle_report",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									111, 114, 97, 99, 108, 101, 95, 114, 101,
+									112, 111, 114, 116, 95, 115, 101, 101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market"
+							}
+						]
+					}
+				},
+				{
+					"name": "system_program",
+					"address": "11111111111111111111111111111111"
+				}
+			],
+			"args": [
+				{
+					"name": "betting_starts_after",
+					"type": {
+						"option": "i64"
+					}
+				},
+				{
+					"name": "media_id",
+					"type": "u64"
+				},
+				{
+					"name": "radius",
+					"type": "u8"
+				},
+				{
+					"name": "oracle_set",
+					"type": {
+						"array": ["pubkey", 3]
+					}
+				},
+				{
+					"name": "oracle_threshold",
+					"type": "u8"
+				}
+			]
+		},
+		{
+			"name": "initialize_treasury",
+			"discriminator": [124, 186, 211, 195, 85, 165, 129, 166],
+			"accounts": [
+				{
+					"name": "authority",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "treasury",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									116, 114, 101, 97, 115, 117, 114, 121, 95,
+									115, 101, 101, 100
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "system_program",
+					"address": "11111111111111111111111111111111"
+				}
+			],
+			"args": []
+		},
+		{
+			"name": "place_bet",
+			"discriminator": [222, 62, 67, 220, 63, 166, 126, 33],
+			"accounts": [
+				{
+					"name": "user",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "market",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									109, 97, 114, 107, 101, 116, 95, 115, 101,
+									101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market.media_id",
+								"account": "Market"
+							}
+						]
+					}
+				},
+				{
+					"name": "user_position",
+					"writable": true
+				},
+				{
+					"name": "vault",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									118, 97, 117, 108, 116, 95, 115, 101, 101,
+									100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market"
+							}
+						]
+					}
+				},
+				{
+					"name": "system_program",
+					"address": "11111111111111111111111111111111"
+				}
+			],
+			"args": [
+				{
+					"name": "bucket",
+					"type": "u8"
+				},
+				{
+					"name": "amount",
+					"type": "u64"
+				}
+			]
+		},
+		{
+			"name": "reclaim_pool",
+			"discriminator": [245, 166, 14, 51, 160, 71, 224, 56],
+			"accounts": [
+				{
+					"name": "caller",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "market",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									109, 97, 114, 107, 101, 116, 95, 115, 101,
+									101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market.media_id",
+								"account": "Market"
+							}
+						]
+					}
+				},
+				{
+					"name": "vault",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									118, 97, 117, 108, 116, 95, 115, 101, 101,
+									100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market"
+							}
+						]
+					}
+				},
+				{
+					"name": "treasury",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									116, 114, 101, 97, 115, 117, 114, 121, 95,
+									115, 101, 101, 100
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "system_program",
+					"address": "11111111111111111111111111111111"
+				}
+			],
+			"args": []
+		},
+		{
+			"name": "resolve_market",
+			"discriminator": [155, 23, 80, 173, 46, 74, 23, 239],
+			"accounts": [
+				{
+					"name": "caller",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "market",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									109, 97, 114, 107, 101, 116, 95, 115, 101,
+									101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market.media_id",
+								"account": "Market"
+							}
+						]
+					}
+				},
+				{
+					"name": "oracle_report",
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									111, 114, 97, 99, 108, 101, 95, 114, 101,
+									112, 111, 114, 116, 95, 115, 101, 101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market"
+							}
+						]
+					}
+				},
+				{
+					"name": "vault",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									118, 97, 117, 108, 116, 95, 115, 101, 101,
+									100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market"
+							}
+						]
+					}
+				},
+				{
+					"name": "treasury",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									116, 114, 101, 97, 115, 117, 114, 121, 95,
+									115, 101, 101, 100
+								]
+							}
+						]
+					}
+				},
+				{
+					"name": "system_program",
+					"address": "11111111111111111111111111111111"
+				}
+			],
+			"args": []
+		},
+		{
+			"name": "submit_score",
+			"discriminator": [212, 128, 45, 22, 112, 82, 85, 235],
+			"accounts": [
+				{
+					"name": "oracle_signer",
+					"writable": true,
+					"signer": true
+				},
+				{
+					"name": "market",
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									109, 97, 114, 107, 101, 116, 95, 115, 101,
+									101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market.media_id",
+								"account": "Market"
+							}
+						]
+					}
+				},
+				{
+					"name": "oracle_report",
+					"writable": true,
+					"pda": {
+						"seeds": [
+							{
+								"kind": "const",
+								"value": [
+									111, 114, 97, 99, 108, 101, 95, 114, 101,
+									112, 111, 114, 116, 95, 115, 101, 101, 100
+								]
+							},
+							{
+								"kind": "account",
+								"path": "market"
+							}
+						]
+					}
+				},
+				{
+					"name": "system_program",
+					"address": "11111111111111111111111111111111"
+				}
+			],
+			"args": [
+				{
+					"name": "score",
+					"type": "u8"
+				}
+			]
+		}
+	],
+	"accounts": [
+		{
+			"name": "Market",
+			"discriminator": [219, 190, 213, 55, 0, 227, 198, 154]
+		},
+		{
+			"name": "OracleReport",
+			"discriminator": [72, 98, 174, 167, 90, 119, 146, 220]
+		},
+		{
+			"name": "UserPosition",
+			"discriminator": [251, 248, 209, 245, 83, 234, 17, 27]
+		}
+	],
+	"errors": [
+		{
+			"code": 6000,
+			"name": "MarketAlreadyClosed",
+			"msg": "market is already closed"
+		},
+		{
+			"code": 6001,
+			"name": "MarketNotClosed",
+			"msg": "market is not closed yet"
+		},
+		{
+			"code": 6002,
+			"name": "MarketAlreadyResolved",
+			"msg": "market is already resolved"
+		},
+		{
+			"code": 6003,
+			"name": "MarketNotResolved",
+			"msg": "market is not resolved yet"
+		},
+		{
+			"code": 6004,
+			"name": "MarketAlreadyClaimed",
+			"msg": "market has been already reclaimed"
+		},
+		{
+			"code": 6005,
+			"name": "BettingNotStarted",
+			"msg": "betting is not started yet"
+		},
+		{
+			"code": 6006,
+			"name": "BettingClosed",
+			"msg": "betting window is closed"
+		},
+		{
+			"code": 6007,
+			"name": "BettingStillOpen",
+			"msg": "betting window is still open"
+		},
+		{
+			"code": 6008,
+			"name": "SettlementNotReady",
+			"msg": "settlement time not reached yet"
+		},
+		{
+			"code": 6009,
+			"name": "SettlementTimeInvalid",
+			"msg": "settlement time is not valid"
+		},
+		{
+			"code": 6010,
+			"name": "ClaimDeadlinePassed",
+			"msg": "claim deadline is passed"
+		},
+		{
+			"code": 6011,
+			"name": "ClaimDeadlineNotPassed",
+			"msg": "claim deadline has not passed yet"
+		},
+		{
+			"code": 6012,
+			"name": "OracleWindowClosed",
+			"msg": "oracle submission window is not open"
+		},
+		{
+			"code": 6013,
+			"name": "UnauthorizedOracle",
+			"msg": "signer is not in the oracle set"
+		},
+		{
+			"code": 6014,
+			"name": "InvalidOracleThreshold",
+			"msg": "invalid oracle threshold"
+		},
+		{
+			"code": 6015,
+			"name": "OracleAlreadyFinalized",
+			"msg": "oracle report is finalized already"
+		},
+		{
+			"code": 6016,
+			"name": "OracleNotFinalized",
+			"msg": "oracle report is not finalized yet"
+		},
+		{
+			"code": 6017,
+			"name": "OracleAlreadySubmitted",
+			"msg": "oracle signer has already submitted"
+		},
+		{
+			"code": 6018,
+			"name": "OracleDisputed",
+			"msg": "oracle report is disputed - signers disagree"
+		},
+		{
+			"code": 6019,
+			"name": "InvalidBucket",
+			"msg": "invalid bucket: must be from 1 to 100"
+		},
+		{
+			"code": 6020,
+			"name": "InvalidAmount",
+			"msg": "bet amount must be greater than zero dollar"
+		},
+		{
+			"code": 6021,
+			"name": "AlreadyClaimed",
+			"msg": "reward already claimed"
+		},
+		{
+			"code": 6022,
+			"name": "InsufficientClaimAmount",
+			"msg": "insufficient reward amount"
+		},
+		{
+			"code": 6023,
+			"name": "NotAWinner",
+			"msg": "user is not a winner - bucket outside winning radius"
+		},
+		{
+			"code": 6024,
+			"name": "Unauthorized",
+			"msg": "you did not place this position"
+		},
+		{
+			"code": 6025,
+			"name": "MathOverflow",
+			"msg": "math overflow"
+		},
+		{
+			"code": 6026,
+			"name": "MathUnderflow",
+			"msg": "math underflow"
+		}
+	],
+	"types": [
+		{
+			"name": "Market",
+			"type": {
+				"kind": "struct",
+				"fields": [
+					{
+						"name": "media_id",
+						"type": "u64"
+					},
+					{
+						"name": "creator",
+						"type": "pubkey"
+					},
+					{
+						"name": "created_at",
+						"type": "i64"
+					},
+					{
+						"name": "betting_starts_at",
+						"type": "i64"
+					},
+					{
+						"name": "betting_closes_at",
+						"type": "i64"
+					},
+					{
+						"name": "settle_at",
+						"type": "i64"
+					},
+					{
+						"name": "claim_deadline",
+						"type": "i64"
+					},
+					{
+						"name": "radius",
+						"type": "u8"
+					},
+					{
+						"name": "protocol_fee_bps",
+						"type": "u16"
+					},
+					{
+						"name": "creator_fee_bps",
+						"type": "u16"
+					},
+					{
+						"name": "oracle_set",
+						"type": {
+							"array": ["pubkey", 3]
+						}
+					},
+					{
+						"name": "oracle_threshold",
+						"type": "u8"
+					},
+					{
+						"name": "pool",
+						"type": {
+							"array": ["u64", 101]
+						}
+					},
+					{
+						"name": "weighted_pool",
+						"type": {
+							"array": ["u64", 101]
+						}
+					},
+					{
+						"name": "total_pool",
+						"type": "u64"
+					},
+					{
+						"name": "total_prize_pool",
+						"type": "u64"
+					},
+					{
+						"name": "final_outcome",
+						"type": "u8"
+					},
+					{
+						"name": "bucket_prize",
+						"type": {
+							"array": ["u64", 101]
+						}
+					},
+					{
+						"name": "fallback_used",
+						"type": "bool"
+					},
+					{
+						"name": "resolved",
+						"type": "bool"
+					},
+					{
+						"name": "closed",
+						"type": "bool"
+					},
+					{
+						"name": "reclaimed",
+						"type": "bool"
+					},
+					{
+						"name": "bump",
+						"type": "u8"
+					}
+				]
+			}
+		},
+		{
+			"name": "OracleReport",
+			"type": {
+				"kind": "struct",
+				"fields": [
+					{
+						"name": "market",
+						"type": "pubkey"
+					},
+					{
+						"name": "submissions",
+						"type": {
+							"array": [
+								{
+									"defined": {
+										"name": "OracleSubmission"
+									}
+								},
+								3
+							]
+						}
+					},
+					{
+						"name": "submission_count",
+						"type": "u8"
+					},
+					{
+						"name": "agreed_score",
+						"type": "u8"
+					},
+					{
+						"name": "finalized",
+						"type": "bool"
+					},
+					{
+						"name": "disputed",
+						"type": "bool"
+					},
+					{
+						"name": "bump",
+						"type": "u8"
+					}
+				]
+			}
+		},
+		{
+			"name": "OracleSubmission",
+			"type": {
+				"kind": "struct",
+				"fields": [
+					{
+						"name": "signer",
+						"type": "pubkey"
+					},
+					{
+						"name": "score",
+						"type": "u8"
+					}
+				]
+			}
+		},
+		{
+			"name": "UserPosition",
+			"type": {
+				"kind": "struct",
+				"fields": [
+					{
+						"name": "user",
+						"type": "pubkey"
+					},
+					{
+						"name": "market",
+						"type": "pubkey"
+					},
+					{
+						"name": "bucket",
+						"type": "u8"
+					},
+					{
+						"name": "amount",
+						"type": "u64"
+					},
+					{
+						"name": "weighted_amount",
+						"type": "u64"
+					},
+					{
+						"name": "claimed",
+						"type": "bool"
+					},
+					{
+						"name": "bump",
+						"type": "u8"
+					}
+				]
+			}
+		}
+	]
+}

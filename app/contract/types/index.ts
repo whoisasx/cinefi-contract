@@ -1,8 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
 import { IdlAccounts } from "@coral-xyz/anchor";
 
-export type { Cinefi } from "../../../target/types/cinefi";
-import type { Cinefi } from "../../../target/types/cinefi";
+export type { Cinefi } from "../cinefi";
+import type { Cinefi } from "../cinefi";
 
 export type Market = IdlAccounts<Cinefi>["market"];
 export type OracleReport = IdlAccounts<Cinefi>["oracleReport"];
