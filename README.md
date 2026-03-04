@@ -2,13 +2,129 @@
 
 A decentralized prediction market protocol on Solana where users bet on media ratings — movies, shows, or any scored content. Built with the [Anchor](https://www.anchor-lang.com/) framework.
 
+**Program ID:** `GomtSs5546sx4NQFsGaJtwFrDytfqRQPBADkiUr7PcyW`
+
+---
+
+## 🚀 Quick Navigation
+
+Choose based on what you're building:
+
+| Goal                             | Resource                                                      |
+| -------------------------------- | ------------------------------------------------------------- |
+| **Building a frontend/app**      | → See [TypeScript SDK](#typescript-sdk) section               |
+| **Understanding the protocol**   | → See [How It Works](#how-it-works) section                   |
+| **Running Rust program locally** | → See [Getting Started](#getting-started-development) section |
+| **Deploying to Solana**          | → See [Deploy (Localnet)](#deploy-localnet) section           |
+| **Full SDK API Reference**       | → See [app/contract/README.md](./app/contract/README.md)      |
+
+---
+
+## TypeScript SDK
+
+The **easiest way** to interact with Cinefi is through the TypeScript SDK. It provides type-safe wrappers for all 8 program instructions, account fetching, validation, and utility functions.
+
+### 📍 SDK Location
+
+```
+cinefi/
+└── app/
+    └── contract/          ← TypeScript SDK is here
+        ├── README.md      ← Full SDK documentation (1600+ lines)
+        ├── index.ts       ← Main entry point
+        ├── pdas/
+        ├── constants/
+        ├── errors/
+        ├── types/
+        ├── utils/
+        ├── accounts/
+        └── instructions/
+```
+
+### ⚡ Quick Start (SDK)
+
+```typescript
+import CinefiSDK, {
+	createMarketAndSend,
+	placeBetAndSend,
+} from "./app/contract";
+import { Connection, Keypair } from "@solana/web3.js";
+import { Wallet } from "@coral-xyz/anchor";
+
+// 1. Initialize connection & SDK
+const connection = new Connection("https://api.devnet.solana.com");
+const wallet = new Wallet(Keypair.generate());
+const sdk = new CinefiSDK({ connection, wallet });
+
+// 2. Create a market
+const txId = await createMarketAndSend(sdk.program, creator, {
+	mediaId: 12345n,
+	radius: 5,
+	oracleSet: [oracle1, oracle2, oracle3],
+	oracleThreshold: 2,
+});
+
+// 3. Place a bet
+const betTxId = await placeBetAndSend(sdk.program, bettor, {
+	mediaId: 12345n,
+	bucket: 75,
+	amount: 1_000_000_000n, // 1 SOL
+});
+```
+
+### 📖 Full SDK Documentation
+
+For **complete API reference**, environment setup, oracle management, constraint documentation, error handling, and advanced workflows, see:
+
+👉 **[app/contract/README.md](./app/contract/README.md)** (1600+ lines, covers everything)
+
+**SDK Features:**
+
+-   ✅ Type-safe instruction builders (8 instructions)
+-   ✅ PDA derivation for all account types (5 PDAs)
+-   ✅ Account fetching & parsing (6 methods)
+-   ✅ 27 custom error codes with parsing
+-   ✅ Validation helpers (bucket, amount, threshold)
+-   ✅ State checking (betting open? can claim? etc)
+-   ✅ Conversion utilities (SOL ↔ lamports, time multipliers)
+-   ✅ Time management (decay multipliers, deadline checks)
+-   ✅ Complete constraint documentation
+
+### 🔧 SDK Usage in Your Project
+
+```typescript
+// ESM import
+import CinefiSDK from "./app/contract";
+
+// or CommonJS
+const CinefiSDK = require("./app/contract");
+
+// Environment setup required
+import dotenv from "dotenv";
+dotenv.config();
+
+// Load keys from .env
+const walletSecret = process.env.WALLET_SECRET_KEY;
+const oracle1Secret = process.env.ORACLE_1_SECRET_KEY;
+const oracle2Secret = process.env.ORACLE_2_SECRET_KEY;
+const oracle3Secret = process.env.ORACLE_3_SECRET_KEY;
+```
+
+See [app/contract/README.md - Environment Configuration](./app/contract/README.md#environment-configuration) for complete setup.
+
 ---
 
 ## Table of Contents
 
 - [Cinefi](#cinefi)
+  - [🚀 Quick Navigation](#-quick-navigation)
+  - [TypeScript SDK](#typescript-sdk)
+    - [📍 SDK Location](#-sdk-location)
+    - [⚡ Quick Start (SDK)](#-quick-start-sdk)
+    - [📖 Full SDK Documentation](#-full-sdk-documentation)
+    - [🔧 SDK Usage in Your Project](#-sdk-usage-in-your-project)
   - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
+  - [Program Overview](#program-overview)
   - [How It Works](#how-it-works)
     - [Market Lifecycle](#market-lifecycle)
     - [Scoring \& Buckets](#scoring--buckets)
@@ -35,20 +151,57 @@ A decentralized prediction market protocol on Solana where users bet on media ra
   - [Protocol Constants](#protocol-constants)
   - [Error Codes](#error-codes)
   - [Project Structure](#project-structure)
-  - [Getting Started](#getting-started)
+  - [Getting Started (Development)](#getting-started-development)
     - [Prerequisites](#prerequisites)
     - [Install Dependencies](#install-dependencies)
     - [Build the Program](#build-the-program)
     - [Run Tests](#run-tests)
     - [Deploy (Localnet)](#deploy-localnet)
+  - [Development: Program vs SDK](#development-program-vs-sdk)
+    - [Building a Frontend/App](#building-a-frontendapp)
+    - [Modifying the Program (Advanced)](#modifying-the-program-advanced)
+  - [Common Tasks](#common-tasks)
+    - [Task: Create a Web3 Frontend for Cinefi](#task-create-a-web3-frontend-for-cinefi)
+    - [Task: Run Cinefi Locally for Testing](#task-run-cinefi-locally-for-testing)
+    - [Task: Understand the Protocol Better](#task-understand-the-protocol-better)
+  - [📚 Comprehensive Resource Guide](#-comprehensive-resource-guide)
+    - [For SDK Users (Frontend Developers)](#for-sdk-users-frontend-developers)
+    - [For Program Developers](#for-program-developers)
+    - [Key Files](#key-files)
+  - [🚀 Getting Started Paths](#-getting-started-paths)
+    - [Path 1: Build a Frontend App (Recommended for most)](#path-1-build-a-frontend-app-recommended-for-most)
+    - [Path 2: Understand the Protocol](#path-2-understand-the-protocol)
+    - [Path 3: Modify the Program](#path-3-modify-the-program)
+    - [Path 4: Integrate with Existing App](#path-4-integrate-with-existing-app)
+  - [💡 Architecture Summary](#-architecture-summary)
+    - [Three Layers](#three-layers)
+    - [Data Flow](#data-flow)
+  - [📞 Support \& References](#-support--references)
+    - [Documentation Files](#documentation-files)
+    - [External Resources](#external-resources)
+    - [Files to Study](#files-to-study)
+  - [📋 Checklist for Building an App](#-checklist-for-building-an-app)
+  - [🎯 Next Steps](#-next-steps)
+    - [Immediate (Next 30 minutes)](#immediate-next-30-minutes)
+    - [Short Term (Next 2 hours)](#short-term-next-2-hours)
+    - [Medium Term (This week)](#medium-term-this-week)
+    - [Long Term (Production)](#long-term-production)
+  - [📄 License](#-license)
 
 ---
 
-## Overview
+## Program Overview
 
 Cinefi lets anyone create a prediction market tied to a media item (identified by `media_id`). Participants bet SOL on a score bucket between 1 and 100 — representing their prediction of the media's final score. A set of trusted **oracles** submits the real-world score after the betting window closes. Winners — those who bet within a configurable **radius** of the final score — share the prize pool, weighted by how close their bucket is to the outcome and how early they placed their bet.
 
-**Program ID:** `GomtSs5546sx4NQFsGaJtwFrDytfqRQPBADkiUr7PcyW`
+**Key Features:**
+
+-   **Decentralized Oracle System** - 3 oracles provide consensus on outcomes
+-   **Time-Weighted Betting** - Early bettors earn higher multipliers (1.0x → 0.272x over 14 days)
+-   **Proximity-Based Rewards** - Winners closer to the actual outcome earn more
+-   **Automatic Fee Distribution** - 3% protocol fee, customizable creator fees
+-   **Fallback Mechanism** - If no one is in the winning radius, the closest bucket wins
+-   **Permissionless** - Anyone can create markets, place bets, or claim rewards
 
 ---
 
@@ -509,15 +662,37 @@ The global protocol treasury. Derived from `["treasury_seed"]`. Receives:
 cinefi/
 ├── Anchor.toml                    # Anchor workspace config
 ├── Cargo.toml                     # Workspace Cargo manifest
-├── package.json                   # Node.js dependencies (tests)
+├── package.json                   # Node.js dependencies (tests + SDK)
 ├── tsconfig.json                  # TypeScript config
+├── README.md                       # This file
+│
+├── app/
+│   └── contract/                  # 🚀 TypeScript SDK (use this for frontend!)
+│       ├── README.md              # Complete SDK documentation (1600+ lines)
+│       ├── index.ts               # SDK entry point
+│       ├── pdas/index.ts          # 5 PDA derivation functions
+│       ├── constants/index.ts     # Protocol constants
+│       ├── errors/index.ts        # 27 error codes + parsing
+│       ├── types/index.ts         # TypeScript type definitions
+│       ├── utils/index.ts         # Validation, conversion, state functions
+│       ├── accounts/index.ts      # Account fetching methods
+│       └── instructions/          # 8 instruction modules
+│           ├── initialize-treasury.ts
+│           ├── create-market.ts
+│           ├── place-bet.ts
+│           ├── close-market.ts
+│           ├── submit-score.ts
+│           ├── resolve-market.ts
+│           ├── claim-reward.ts
+│           └── reclaim-pool.ts
+│
 ├── programs/
-│   └── cinefi/
+│   └── cinefi/                    # Rust Anchor program
 │       ├── Cargo.toml
 │       └── src/
 │           ├── lib.rs             # Program entrypoint & instruction dispatch
 │           ├── errors/
-│           │   └── mod.rs         # All custom error codes
+│           │   └── mod.rs         # All custom error codes (27 total)
 │           ├── instructions/
 │           │   ├── mod.rs
 │           │   ├── initialize_treasury.rs
@@ -537,11 +712,14 @@ cinefi/
 │           └── utils/
 │               ├── mod.rs
 │               ├── validations.rs # is_winner, oracle checks
-│               └── weights.rs     # Time multipliers, closeness weights, prize computation
+│               └── weights.rs     # Time multipliers, weights, prize computation
+│
 ├── tests/
 │   └── cinefi.ts                  # Integration tests
+│
 ├── migrations/
 │   └── deploy.ts
+│
 └── target/
     ├── idl/
     │   └── cinefi.json            # Generated IDL
@@ -549,54 +727,464 @@ cinefi/
         └── cinefi.ts              # Generated TypeScript types
 ```
 
----
+## Getting Started (Development)
 
-## Getting Started
+**If you want to use Cinefi in your app**, use the [TypeScript SDK](#typescript-sdk) instead (much easier!).
+
+**If you want to develop or test the Solana program itself**, follow these steps:
 
 ### Prerequisites
 
 -   [Rust](https://rustup.rs/) with the `solana` toolchain (see `rust-toolchain.toml`)
 -   [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools)
 -   [Anchor CLI](https://www.anchor-lang.com/docs/installation)
--   [Node.js](https://nodejs.org/) & [Yarn](https://yarnpkg.com/)
+-   [Node.js](https://nodejs.org/) v18+ & [Yarn](https://yarnpkg.com/) or npm
+
+**Verify versions:**
+
+```bash
+rustc --version
+solana --version
+anchor --version
+node --version
+```
+
+**Note:** For SDK usage only (no program development), you only need Node.js.
 
 ### Install Dependencies
 
 ```bash
+# Install Rust/Solana dependencies
+rustup update solana
+cargo build -p cinefi
+
+# Install Node dependencies
 yarn install
+# or
+npm install
 ```
 
 ### Build the Program
 
 ```bash
+# Build all programs
 anchor build
+
+# Build specific program
+cargo build -p cinefi --release
 ```
+
+**Output:**
+
+-   Binaries: `target/release/cinefi.so`
+-   IDL: `target/idl/cinefi.json`
+-   TypeScript types: `target/types/cinefi.ts`
 
 ### Run Tests
 
 Start a local validator and run the test suite:
 
 ```bash
+# Start Solana localnet (in one terminal)
+solana-test-validator
+
+# In another terminal, run tests
 anchor test
+
+# Or run specific test file
+anchor test --skip-local-validator
 ```
+
+**What tests cover:**
+
+-   ✅ All 8 program instructions
+-   ✅ Market lifecycle (create → bet → resolve → claim)
+-   ✅ Oracle consensus logic
+-   ✅ Prize distribution calculations
+-   ✅ Error cases and validation
+-   ✅ Edge cases (fallback, overflow, etc)
 
 ### Deploy (Localnet)
 
 ```bash
+# Start local validator
+solana-test-validator
+
+# Deploy program (in another terminal)
 anchor deploy
+
+# Program deployed to:
+# GomtSs5546sx4NQFsGaJtwFrDytfqRQPBADkiUr7PcyW
 ```
 
-The program will be deployed to the address configured in `Anchor.toml`:
-
-```
-GomtSs5546sx4NQFsGaJtwFrDytfqRQPBADkiUr7PcyW
-```
-
-After deployment, initialize the treasury before creating any markets:
+**Before creating markets, initialize treasury:**
 
 ```typescript
+import { Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
+import { Connection, Keypair } from "@solana/web3.js";
+
+const connection = new Connection("http://localhost:8899");
+const wallet = new Wallet(Keypair.generate());
+const provider = new AnchorProvider(connection, wallet, {});
+const program = new Program(IDL, PROGRAM_ID, provider);
+
 await program.methods
 	.initializeTreasury()
 	.accounts({ authority: wallet.publicKey })
 	.rpc();
 ```
+
+---
+
+## Development: Program vs SDK
+
+### Building a Frontend/App
+
+**Use the TypeScript SDK** (in `/app/contract/`):
+
+```typescript
+// Simple!
+import CinefiSDK, { placeBetAndSend } from "./app/contract";
+
+const sdk = new CinefiSDK({ connection, wallet });
+await placeBetAndSend(sdk.program, user, {
+	mediaId: 123n,
+	bucket: 75,
+	amount: 1_000_000_000n,
+});
+```
+
+**Why SDK?**
+
+-   Type-safe (full TypeScript support)
+-   Handles serialization & deserialization
+-   Built-in validation & error parsing
+-   Utility functions (time multipliers, state checks, etc)
+-   Complete documentation in [app/contract/README.md](./app/contract/README.md)
+-   No need to understand Anchor internals
+
+### Modifying the Program (Advanced)
+
+**Edit Rust code** (in `/programs/cinefi/src/`):
+
+```rust
+// Example: Add new instruction or modify existing
+pub fn place_bet(ctx: Context<PlaceBet>, bucket: u8, amount: u64) -> Result<()> {
+    // Your logic here
+}
+```
+
+**Then:**
+
+1. Build: `anchor build`
+2. Tests: `anchor test`
+3. Deploy: `anchor deploy`
+4. SDK automatically regenerates from IDL
+
+**Why modify?**
+
+-   Changing protocol logic
+-   Adding new features
+-   Optimizing on-chain calculations
+-   Fixing bugs in Rust code
+
+---
+
+## Common Tasks
+
+### Task: Create a Web3 Frontend for Cinefi
+
+**Solution:** Use the SDK
+
+1. Create Next.js/React app
+2. Import CinefiSDK from `./app/contract`
+3. Follow examples in [app/contract/README.md](./app/contract/README.md)
+4. Done!
+
+**Example:**
+
+```typescript
+import CinefiSDK, { fetchMarket, getMarketState } from "./app/contract";
+
+export default function MarketView({ mediaId }: { mediaId: bigint }) {
+	const [market, setMarket] = useState(null);
+	const [state, setState] = useState(null);
+
+	useEffect(async () => {
+		const m = await fetchMarket(sdk.program, mediaId);
+		setMarket(m);
+		setState(getMarketState(m!));
+	}, []);
+
+	return (
+		<div>
+			<h2>Market {mediaId}</h2>
+			<p>Betting Open: {state?.canBet ? "Yes" : "No"}</p>
+			<p>Can Claim: {state?.canClaim ? "Yes" : "No"}</p>
+		</div>
+	);
+}
+```
+
+### Task: Run Cinefi Locally for Testing
+
+**Solution:** Use localnet
+
+```bash
+# Terminal 1: Start local validator
+solana-test-validator
+
+# Terminal 2: Deploy program
+anchor deploy
+
+# Terminal 3: Run your tests
+anchor test
+```
+
+See [Run Tests](#run-tests) and [Deploy (Localnet)](#deploy-localnet) sections.
+
+### Task: Understand the Protocol Better
+
+**Solution:** Read the docs
+
+1. **Quick overview:** This file (README.md)
+2. **How markets work:** [Market Lifecycle](#market-lifecycle)
+3. **Complete details:** [How It Works](#how-it-works)
+4. **Using in code:** [app/contract/README.md](./app/contract/README.md)
+5. **Program internals:** [Program Instructions](#program-instructions) and [Account Architecture](#account-architecture)
+
+---
+
+## 📚 Comprehensive Resource Guide
+
+### For SDK Users (Frontend Developers)
+
+| Resource           | Purpose                                             | Link                                                                                 |
+| ------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| SDK Setup          | Environment config, oracle keys, cluster connection | [app/contract/README.md - Setup](./app/contract/README.md#installation--setup)       |
+| API Reference      | All 8 instructions, 5 PDAs, validation functions    | [app/contract/README.md - API Reference](./app/contract/README.md#api-reference)     |
+| Complete Workflows | Real market lifecycle examples                      | [app/contract/README.md - Workflows](./app/contract/README.md#complete-workflows)    |
+| Error Handling     | All 27 error codes, recovery patterns               | [app/contract/README.md - Error Handling](./app/contract/README.md#error-handling)   |
+| Constraint Docs    | Time windows, amount limits, bucket rules           | [app/contract/README.md - Constraints](./app/contract/README.md#program-constraints) |
+| Troubleshooting    | Connection issues, wallet errors, debugging         | [app/contract/README.md - Troubleshooting](./app/contract/README.md#troubleshooting) |
+
+### For Program Developers
+
+| Resource         | Purpose                                    | Link                                                              |
+| ---------------- | ------------------------------------------ | ----------------------------------------------------------------- |
+| Program Overview | Instructions, accounts, logic              | [Program Overview](#program-overview) section (this file)         |
+| Market Lifecycle | State transitions, timing                  | [Market Lifecycle](#market-lifecycle) section (this file)         |
+| Instructions     | Detailed specification of each instruction | [Program Instructions](#program-instructions) section (this file) |
+| Accounts         | Data structures and field descriptions     | [Account Architecture](#account-architecture) section (this file) |
+| Constants        | Time values, fees, limits                  | [Protocol Constants](#protocol-constants) section (this file)     |
+| Error Codes      | All 27 error codes with descriptions       | [Error Codes](#error-codes) section (this file)                   |
+| Rust Code        | Implementation details                     | `/programs/cinefi/src/` directory                                 |
+
+### Key Files
+
+| File/Folder                         | Purpose                                         |
+| ----------------------------------- | ----------------------------------------------- |
+| `app/contract/`                     | 🔥 **Start here for frontend** - TypeScript SDK |
+| `app/contract/README.md`            | 📖 **Complete SDK documentation (1600+ lines)** |
+| `programs/cinefi/src/lib.rs`        | Entry point for Rust program                    |
+| `programs/cinefi/src/instructions/` | All 8 instruction implementations               |
+| `programs/cinefi/src/states/`       | Account definitions                             |
+| `tests/cinefi.ts`                   | Integration tests (shows SDK usage)             |
+| `target/idl/cinefi.json`            | Generated IDL (shared between Rust & TS)        |
+
+---
+
+## 🚀 Getting Started Paths
+
+### Path 1: Build a Frontend App (Recommended for most)
+
+```
+1. Read: Quick Navigation → TypeScript SDK section above
+2. Setup: app/contract/README.md - Environment Configuration
+3. Code: Import CinefiSDK and follow examples
+4. Reference: app/contract/README.md - API Reference
+5. Deploy: Use TestNet or MainNet
+```
+
+**Time: 1-2 hours to basic working app**
+
+### Path 2: Understand the Protocol
+
+```
+1. Read: Program Overview (this file)
+2. Understand: Market Lifecycle & How It Works (this file)
+3. Reference: Program Instructions & Account Architecture (this file)
+4. Deep dive: Scroll to Error Codes & Constants (this file)
+5. Code: Look at tests/cinefi.ts for real examples
+```
+
+**Time: 2-3 hours of reading**
+
+### Path 3: Modify the Program
+
+```
+1. Setup: Run Prerequisites through Deploy sections above
+2. Understand: Program Instructions & Account Architecture (this file)
+3. Modify: Edit code in programs/cinefi/src/
+4. Build: cargo build -p cinefi
+5. Test: anchor test (tests/ folder)
+6. Deploy: anchor deploy
+7. Regenerate: SDK regenerates from new IDL automatically
+```
+
+**Time: Varies by change complexity**
+
+### Path 4: Integrate with Existing App
+
+```
+1. Copy: app/contract/ folder to your project
+2. Install: npm install @coral-xyz/anchor @solana/web3.js bn.js
+3. Setup: Create .env with WALLET_SECRET_KEY and ORACLE_*_SECRET_KEY
+4. Use: import CinefiSDK from "./app/contract"
+5. Reference: app/contract/README.md for all possible operations
+```
+
+**Time: 30 minutes**
+
+---
+
+## 💡 Architecture Summary
+
+### Three Layers
+
+```
+┌─────────────────────────────────────────┐
+│  Your Frontend App (React, Next.js, etc)│
+├─────────────────────────────────────────┤  ← Use TypeScript SDK here
+│  TypeScript SDK (app/contract/)         │     Type-safe, easy to use
+│  - Instructions (8)                     │     All examples provided
+│  - Account Fetching (6 methods)         │
+│  - Validation (15+ helpers)             │
+│  - Error Parsing (27 codes)             │
+├─────────────────────────────────────────┤
+│  Solana Blockchain                      │  ← Program runs here
+│  Cinefi Program (programs/cinefi/)      │     You don't interact directly
+│  - 8 Instructions                       │
+│  - 5 Account Types                      │
+│  - Oracle Consensus Logic               │
+│  - Prize Distribution Math              │
+├─────────────────────────────────────────┤
+│  Solana Network (Devnet/Testnet/Mainnet)│
+└─────────────────────────────────────────┘
+```
+
+### Data Flow
+
+```
+User Input
+    ↓
+TypeScript SDK validates
+    ↓
+SDK calls program instruction
+    ↓
+Program executes on blockchain
+    ↓
+Program updates accounts
+    ↓
+SDK fetches updated accounts
+    ↓
+Frontend displays results
+```
+
+**You only write:**
+
+-   Frontend code
+-   SDK usage in frontend
+
+**You don't write:**
+
+-   Blockchain code (already built)
+-   Transaction serialization (SDK handles)
+-   Account struct definitions (SDK handles)
+
+---
+
+## 📞 Support & References
+
+### Documentation Files
+
+-   **Main Docs:** `/README.md` (this file) - Protocol overview
+-   **SDK Docs:** `/app/contract/README.md` - Complete API reference & setup
+-   **IDL Docs:** `/target/idl/cinefi.json` - Generated from Rust code
+
+### External Resources
+
+-   [Anchor Documentation](https://www.anchor-lang.com/docs/intro)
+-   [Solana Documentation](https://docs.solana.com/)
+-   [Solana Web3.js](https://solana-labs.github.io/solana-web3.js/)
+-   [BN.js Documentation](https://github.com/indutny/bn.js)
+
+### Files to Study
+
+**To learn protocol:**
+
+-   `programs/cinefi/src/lib.rs` - Main logic
+-   `programs/cinefi/src/states/` - Data structures
+-   `tests/cinefi.ts` - Real usage examples
+
+**To build frontend:**
+
+-   `app/contract/README.md` - Complete guide
+-   `app/contract/instructions/` - How each instruction works
+-   `app/contract/utils/index.ts` - Utility functions
+
+---
+
+## 📋 Checklist for Building an App
+
+-   [ ] Read [Quick Navigation](#-quick-navigation) section
+-   [ ] Read [TypeScript SDK](#typescript-sdk) section
+-   [ ] Clone/import `/app/contract/` to your project
+-   [ ] Create `.env` file with wallet and oracle keys (from [SDK docs](./app/contract/README.md#environment-configuration))
+-   [ ] Test connection to cluster (from [SDK docs](./app/contract/README.md#cluster-connection))
+-   [ ] Run quick start example (from [SDK quick start](#-quick-start-sdk))
+-   [ ] Study full examples in [app/contract/README.md](./app/contract/README.md#complete-workflows)
+-   [ ] Implement your frontend features
+-   [ ] Test on Devnet
+-   [ ] Deploy to Testnet or Mainnet
+
+---
+
+## 🎯 Next Steps
+
+### Immediate (Next 30 minutes)
+
+1. Read the [Quick Navigation](#-quick-navigation) section above
+2. Check [TypeScript SDK](#typescript-sdk) section for your use case
+3. Open [app/contract/README.md](./app/contract/README.md) in your editor
+
+### Short Term (Next 2 hours)
+
+1. Set up environment variables (`.env` file)
+2. Create a basic script that connects to SDK
+3. Run the [Quick Start example](#-quick-start-sdk)
+4. Fetch a market and display its state
+
+### Medium Term (This week)
+
+1. Build core frontend features
+2. Study [complete workflows](./app/contract/README.md#complete-workflows)
+3. Test on Devnet with real transactions
+4. Implement error handling
+
+### Long Term (Production)
+
+1. Comprehensive testing
+2. Security audit of your app
+3. Deploy to Testnet
+4. Deploy to Mainnet
+
+---
+
+## 📄 License
+
+MIT
+
+---
+
+**Questions?** Check the comprehensive SDK docs: [app/contract/README.md](./app/contract/README.md) (1600+ lines covering everything)
