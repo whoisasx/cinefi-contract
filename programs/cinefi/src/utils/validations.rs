@@ -39,7 +39,7 @@ pub fn has_already_submitted(oracle_report: &OracleReport, orcale_signer: &Pubke
   oracle_report.submissions
   .iter()
   .take(oracle_report.submission_count as usize)
-  .any(|(pk,_)| pk==orcale_signer)
+  .any(|s| s.signer==*orcale_signer)
 }
 pub fn evaluate_report(oracle_report: &OracleReport, oracle_threshold: u8)->(bool,bool,u8){
   let count=oracle_report.submission_count as usize;
@@ -48,12 +48,12 @@ pub fn evaluate_report(oracle_report: &OracleReport, oracle_threshold: u8)->(boo
     return (false,false,0)
   }
 
-  let first_score= oracle_report.submissions[0].1;
+  let first_score= oracle_report.submissions[0].score;
   let all_agree=oracle_report
   .submissions
   .iter()
   .take(count)
-  .all(|(_, score)| *score==first_score);
+  .all(|s| s.score==first_score);
 
   if all_agree {
     (true, false, first_score)
