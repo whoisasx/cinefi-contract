@@ -8,9 +8,6 @@ import {
 	deriveTreasuryPDA,
 } from "../pdas";
 
-/**
- * Build resolve_market instruction
- */
 export async function resolveMarket(
 	program: Program<Cinefi>,
 	resolver: PublicKey,

@@ -9,9 +9,6 @@ import {
 import { DEFAULT_RADIUS } from "../constants";
 import { validateOracleThreshold } from "../utils";
 
-/**
- * Build create_market instruction
- */
 export async function createMarket(
 	program: Program<Cinefi>,
 	creator: PublicKey,

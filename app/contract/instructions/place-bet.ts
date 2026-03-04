@@ -8,9 +8,6 @@ import {
 } from "../pdas";
 import { validateBucket, validateAmount } from "../utils";
 
-/**
- * Build place_bet instruction
- */
 export async function placeBet(
 	program: Program<Cinefi>,
 	user: PublicKey,

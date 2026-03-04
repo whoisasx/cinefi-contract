@@ -7,9 +7,6 @@ import {
 	deriveUserPositionPDA,
 } from "../pdas";
 
-/**
- * Build claim_reward instruction
- */
 export async function claimReward(
 	program: Program<Cinefi>,
 	user: PublicKey,

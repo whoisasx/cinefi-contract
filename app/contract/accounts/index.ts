@@ -73,7 +73,6 @@ export async function fetchUserPositionsForMarket(
 ): Promise<UserPosition[]> {
 	const positions: UserPosition[] = [];
 
-	// Try fetching all possible buckets (0-100)
 	const fetchPromises = Array.from({ length: 101 }, (_, bucket) =>
 		fetchUserPosition(program, userKey, marketKey, bucket),
 	);

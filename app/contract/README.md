@@ -20,11 +20,12 @@ Complete TypeScript SDK for the **Cinefi** Solana program - a decentralized pred
 ## Overview
 
 Cinefi is a peer-to-peer prediction market protocol where:
-- **Users** place bets on outcomes by selecting buckets (0-100)
-- **Markets** have 14-day betting windows, 21-day settlement, and 14-day claim windows
-- **Oracles** (3 signers) submit consensus scores to resolve markets
-- **Rewards** are distributed based on proximity to final outcome within a radius
-- **Fees** include 3% protocol fee + creator fees, deducted before distribution
+
+-   **Users** place bets on outcomes by selecting buckets (0-100)
+-   **Markets** have 14-day betting windows, 21-day settlement, and 14-day claim windows
+-   **Oracles** (3 signers) submit consensus scores to resolve markets
+-   **Rewards** are distributed based on proximity to final outcome within a radius
+-   **Fees** include 3% protocol fee + creator fees, deducted before distribution
 
 This SDK provides complete, type-safe access to all 8 program instructions, account types, and utility functions. **Everything you need is documented here - no need to read the source code.**
 
@@ -37,18 +38,18 @@ This SDK provides complete, type-safe access to all 8 program instructions, acco
 🛠️ **Utility Helpers** - Validation, conversion, and state checking functions  
 ⏰ **Time Management** - Multiplier calculations and deadline checks  
 🔢 **Constants** - All program constants exported for reference  
-🔍 **Constraint Validation** - Built-in validation for all program constraints  
+🔍 **Constraint Validation** - Built-in validation for all program constraints
 
 ## Prerequisites
 
 Before starting, ensure you have:
 
-- **Node.js** v18+ installed
-- **TypeScript** knowledge (or JavaScript)
-- **Solana CLI** installed (`solana --version`)
-- **Solana wallet** with SOL for transactions and rent exemption
-- **3 Oracle keypairs** for market resolution (see [Oracle Setup](#oracle-setup))
-- **Internet connection** to Solana cluster (Devnet, Testnet, or Mainnet)
+-   **Node.js** v18+ installed
+-   **TypeScript** knowledge (or JavaScript)
+-   **Solana CLI** installed (`solana --version`)
+-   **Solana wallet** with SOL for transactions and rent exemption
+-   **3 Oracle keypairs** for market resolution (see [Oracle Setup](#oracle-setup))
+-   **Internet connection** to Solana cluster (Devnet, Testnet, or Mainnet)
 
 ### Check Solana Installation
 
@@ -76,11 +77,7 @@ import CinefiSDK, {
 	getMarketState,
 } from "./app/contract";
 
-import {
-	Connection,
-	Keypair,
-	PublicKey,
-} from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { Wallet } from "@coral-xyz/anchor";
 ```
 
@@ -156,17 +153,11 @@ if (!walletSecret || !oracle1Secret || !oracle2Secret || !oracle3Secret) {
 }
 
 const walletKeypair = Keypair.fromSecretKey(
-	Buffer.from(walletSecret, "base64")
+	Buffer.from(walletSecret, "base64"),
 );
-const oracle1 = Keypair.fromSecretKey(
-	Buffer.from(oracle1Secret, "base64")
-);
-const oracle2 = Keypair.fromSecretKey(
-	Buffer.from(oracle2Secret, "base64")
-);
-const oracle3 = Keypair.fromSecretKey(
-	Buffer.from(oracle3Secret, "base64")
-);
+const oracle1 = Keypair.fromSecretKey(Buffer.from(oracle1Secret, "base64"));
+const oracle2 = Keypair.fromSecretKey(Buffer.from(oracle2Secret, "base64"));
+const oracle3 = Keypair.fromSecretKey(Buffer.from(oracle3Secret, "base64"));
 ```
 
 ## Cluster Connection
@@ -180,8 +171,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 async function initializeConnection(): Promise<Connection> {
-	const rpcUrl =
-		process.env.SOLANA_RPC_URL || clusterApiUrl("devnet");
+	const rpcUrl = process.env.SOLANA_RPC_URL || clusterApiUrl("devnet");
 
 	const connection = new Connection(rpcUrl, "confirmed");
 
@@ -204,7 +194,7 @@ async function initializeConnection(): Promise<Connection> {
 ```typescript
 async function checkWalletBalance(
 	connection: Connection,
-	publicKey: PublicKey
+	publicKey: PublicKey,
 ): Promise<number> {
 	const balanceLamports = await connection.getBalance(publicKey);
 	const balanceSol = balanceLamports / 1e9;
@@ -213,9 +203,7 @@ async function checkWalletBalance(
 	console.log(`Balance: ${balanceSol} SOL (${balanceLamports} lamports)`);
 
 	if (balanceLamports < 5_000_000) {
-		console.warn(
-			"⚠️  Low balance! Consider airdropping more SOL"
-		);
+		console.warn("⚠️  Low balance! Consider airdropping more SOL");
 	}
 
 	return balanceSol;
@@ -228,14 +216,11 @@ async function checkWalletBalance(
 async function requestAirdrop(
 	connection: Connection,
 	publicKey: PublicKey,
-	lamports: number = 2_000_000_000
+	lamports: number = 2_000_000_000,
 ): Promise<void> {
 	try {
 		console.log(`Requesting ${lamports / 1e9} SOL airdrop...`);
-		const signature = await connection.requestAirdrop(
-			publicKey,
-			lamports
-		);
+		const signature = await connection.requestAirdrop(publicKey, lamports);
 		await connection.confirmTransaction(signature);
 		console.log(`✓ Airdrop successful`);
 	} catch (error) {
@@ -250,10 +235,11 @@ async function requestAirdrop(
 ### Why 3 Oracles?
 
 The Cinefi protocol requires **exactly 3 oracle signers** for market resolution:
-- Each oracle submits a score independently
-- Consensus is reached when 2+ oracles agree (oracle_threshold = 2 by default)
-- Prevents single-oracle manipulation
-- Ensures decentralized outcome determination
+
+-   Each oracle submits a score independently
+-   Consensus is reached when 2+ oracles agree (oracle_threshold = 2 by default)
+-   Prevents single-oracle manipulation
+-   Ensures decentralized outcome determination
 
 ### Generate Oracle Keypairs
 
@@ -271,9 +257,9 @@ function generateOracleKeypairs(): void {
 	console.log("Generated Oracle Keypairs:\n");
 
 	for (const oracle of oracles) {
-		const secretKeyBase64 = Buffer.from(
-			oracle.keypair.secretKey
-		).toString("base64");
+		const secretKeyBase64 = Buffer.from(oracle.keypair.secretKey).toString(
+			"base64",
+		);
 		const publicKey = oracle.keypair.publicKey.toBase58();
 
 		console.log(`${oracle.name}:`);
@@ -284,12 +270,10 @@ function generateOracleKeypairs(): void {
 
 	console.log("Add these to your .env file:");
 	for (const oracle of oracles) {
-		const secretKeyBase64 = Buffer.from(
-			oracle.keypair.secretKey
-		).toString("base64");
-		console.log(
-			`${oracle.name}_SECRET_KEY=${secretKeyBase64}`
+		const secretKeyBase64 = Buffer.from(oracle.keypair.secretKey).toString(
+			"base64",
 		);
+		console.log(`${oracle.name}_SECRET_KEY=${secretKeyBase64}`);
 	}
 }
 
@@ -299,6 +283,7 @@ generateOracleKeypairs();
 ### Store Oracle Keypairs in Environment
 
 **CRITICAL Security Rules:**
+
 1. **Never commit oracle keypairs to version control**
 2. **Use .env file with .gitignore**
 3. **Treat oracle keys like production credentials**
@@ -306,6 +291,7 @@ generateOracleKeypairs();
 5. **Rotate keys periodically**
 
 **Steps:**
+
 1. Generate keypairs using the function above
 2. Add to `.env` file (verified in `.gitignore`)
 3. Load at runtime (as shown in [Environment Configuration](#environment-configuration))
@@ -341,45 +327,48 @@ const marketParams = {
 
 ### Time Constraints (Absolute Rules)
 
-| Phase | Timeline | Window | Details |
-|-------|----------|--------|---------|
-| Betting | Day 1-14 | 14 days | Users place bets during this window only |
-| Settlement Delay | Day 15-20 | 6 days | No oracle submissions allowed |
-| Oracle Submission | Day 21-21:01 | 1 hour | Oracles submit scores in this window |
-| Claim Period | Day 22-35 | 14 days | Winners can claim rewards |
-| Reclaim Period | Day 36+ | Unlimited | Treasury can reclaim unclaimed funds |
+| Phase             | Timeline     | Window    | Details                                  |
+| ----------------- | ------------ | --------- | ---------------------------------------- |
+| Betting           | Day 1-14     | 14 days   | Users place bets during this window only |
+| Settlement Delay  | Day 15-20    | 6 days    | No oracle submissions allowed            |
+| Oracle Submission | Day 21-21:01 | 1 hour    | Oracles submit scores in this window     |
+| Claim Period      | Day 22-35    | 14 days   | Winners can claim rewards                |
+| Reclaim Period    | Day 36+      | Unlimited | Treasury can reclaim unclaimed funds     |
 
 **Key Constants:**
-- `BETTING_DURATION_DAYS = 14`
-- `SETTLEMENT_DAY = 21`
-- `CLAIM_WINDOW_DAYS = 14`
+
+-   `BETTING_DURATION_DAYS = 14`
+-   `SETTLEMENT_DAY = 21`
+-   `CLAIM_WINDOW_DAYS = 14`
 
 ### Amount Constraints (Lamports are the Unit)
 
-| Constraint | Rule | Details | Error Code |
-|-----------|------|---------|-----------|
-| Minimum Bet | > 0 lamports | Bets must be positive | `InvalidAmount` (6020) |
-| Maximum Bet | No hard limit | Limited by wallet + tx limits | - |
-| Protocol Fee | 300 BPS (3%) | Deducted from pool | - |
-| Creator Fee | 0 BPS (default) | Configurable per market | - |
+| Constraint   | Rule            | Details                       | Error Code             |
+| ------------ | --------------- | ----------------------------- | ---------------------- |
+| Minimum Bet  | > 0 lamports    | Bets must be positive         | `InvalidAmount` (6020) |
+| Maximum Bet  | No hard limit   | Limited by wallet + tx limits | -                      |
+| Protocol Fee | 300 BPS (3%)    | Deducted from pool            | -                      |
+| Creator Fee  | 0 BPS (default) | Configurable per market       | -                      |
 
 **Example Amounts:**
+
 ```typescript
 const oneSol = BigInt(1_000_000_000); // 1 SOL
-const halfSol = BigInt(500_000_000);   // 0.5 SOL
-const oneLamport = BigInt(1);          // Minimum valid
+const halfSol = BigInt(500_000_000); // 0.5 SOL
+const oneLamport = BigInt(1); // Minimum valid
 ```
 
 ### Bucket Constraints (0-100 Scale)
 
-| Constraint | Rule | Details | Error Code |
-|-----------|------|---------|-----------|
-| Valid Range | 0-100 inclusive | Integer values only | `InvalidBucket` (6019) |
-| Bucket Type | u8 | Cannot exceed 255 | - |
-| Total Buckets | 101 | Buckets 0 through 100 | - |
-| Score Range | 0-100 | Oracle scores use same range | `InvalidBucket` (6019) |
+| Constraint    | Rule            | Details                      | Error Code             |
+| ------------- | --------------- | ---------------------------- | ---------------------- |
+| Valid Range   | 0-100 inclusive | Integer values only          | `InvalidBucket` (6019) |
+| Bucket Type   | u8              | Cannot exceed 255            | -                      |
+| Total Buckets | 101             | Buckets 0 through 100        | -                      |
+| Score Range   | 0-100           | Oracle scores use same range | `InvalidBucket` (6019) |
 
 **Winning Criteria:**
+
 ```
 User is a winner if: |userBucket - finalScore| <= radius
 
@@ -390,15 +379,16 @@ Example with radius=5, outcome=75:
 
 ### Oracle Constraints (3 Signers Required)
 
-| Constraint | Rule | Details | Error Code |
-|-----------|------|---------|-----------|
-| Oracle Count | Exactly 3 | No more, no less | - |
-| Threshold | 1-3 | Min to reach consensus | `InvalidAmount` (6020) |
-| Signers | Must be in oracle_set | Only designated oracles | `UnauthorizedOracle` (6012) |
-| Submissions | Max 3 (1 per oracle) | Duplicates overwrite | `OracleAlreadySubmitted` (6015) |
-| Consensus | 2+ must agree | Default threshold=2 | `OracleNotFinalized` (6014) |
+| Constraint   | Rule                  | Details                 | Error Code                      |
+| ------------ | --------------------- | ----------------------- | ------------------------------- |
+| Oracle Count | Exactly 3             | No more, no less        | -                               |
+| Threshold    | 1-3                   | Min to reach consensus  | `InvalidAmount` (6020)          |
+| Signers      | Must be in oracle_set | Only designated oracles | `UnauthorizedOracle` (6012)     |
+| Submissions  | Max 3 (1 per oracle)  | Duplicates overwrite    | `OracleAlreadySubmitted` (6015) |
+| Consensus    | 2+ must agree         | Default threshold=2     | `OracleNotFinalized` (6014)     |
 
 **Consensus Logic:**
+
 ```typescript
 // Market resolves with 2+ matching scores
 Scores: [75, 75, 80]
@@ -410,14 +400,14 @@ Result: No consensus (all different)
 
 ### Market State Constraints (Phase Progression)
 
-| State | Allowed Actions | Forbidden Actions | Conditions | Error Code |
-|-------|-----------------|-------------------|-----------|-----------|
-| Active | PlaceBet | Close, Submit, Resolve, Claim | time ∈ [start, start+14d] | - |
-| Closed | Submit, Close (idempotent) | PlaceBet | time ≥ start+14d | `BettingClosed` (6005) |
-| Settlement | Submit | PlaceBet, Resolve | time ∈ [start+21d, start+21d+1h] | `OracleWindowClosed` (6010) |
-| Finalized | Resolve, Claim | PlaceBet, Submit | Oracle report finalized | `OracleNotFinalized` (6014) |
-| Resolved | Claim, Reclaim | PlaceBet, Submit | Rewards calculated | - |
-| Claimed | - | ClaimReward again | After deadline | `AlreadyClaimed` (6021) |
+| State      | Allowed Actions            | Forbidden Actions             | Conditions                       | Error Code                  |
+| ---------- | -------------------------- | ----------------------------- | -------------------------------- | --------------------------- |
+| Active     | PlaceBet                   | Close, Submit, Resolve, Claim | time ∈ [start, start+14d]        | -                           |
+| Closed     | Submit, Close (idempotent) | PlaceBet                      | time ≥ start+14d                 | `BettingClosed` (6005)      |
+| Settlement | Submit                     | PlaceBet, Resolve             | time ∈ [start+21d, start+21d+1h] | `OracleWindowClosed` (6010) |
+| Finalized  | Resolve, Claim             | PlaceBet, Submit              | Oracle report finalized          | `OracleNotFinalized` (6014) |
+| Resolved   | Claim, Reclaim             | PlaceBet, Submit              | Rewards calculated               | -                           |
+| Claimed    | -                          | ClaimReward again             | After deadline                   | `AlreadyClaimed` (6021)     |
 
 ### Fee Distribution Constraints
 
@@ -425,16 +415,16 @@ Result: No consensus (all different)
 Total Pool = Sum of all bets
 Step 1: Deduct Protocol Fee
   Protocol Fee = (Total Pool * 300 / 10000) = 3%
-  
+
 Step 2: Deduct Creator Fee
   Creator Fee = (Total Pool * creatorFeeBps / 10000)
-  
+
 Step 3: Remaining Prize Pool
   Prize Pool = Total Pool - Protocol Fee - Creator Fee
 
 Step 4: Distribute to Winners (within radius)
-  Per Winner = (Prize Pool / Total Pool) 
-            * userBetAmount 
+  Per Winner = (Prize Pool / Total Pool)
+            * userBetAmount
             * (timeMultiplier / 1000)
             * (closenessBonus / 1_000_000)
 
@@ -479,8 +469,7 @@ dotenv.config();
 
 async function initializeSdk() {
 	// 1. Set up cluster connection with validation
-	const rpcUrl =
-		process.env.SOLANA_RPC_URL || clusterApiUrl("devnet");
+	const rpcUrl = process.env.SOLANA_RPC_URL || clusterApiUrl("devnet");
 	const connection = new Connection(rpcUrl, "confirmed");
 
 	try {
@@ -494,26 +483,20 @@ async function initializeSdk() {
 	// 2. Load wallet keypair
 	const walletSecret = process.env.WALLET_SECRET_KEY;
 	if (!walletSecret) {
-		throw new Error(
-			"WALLET_SECRET_KEY not found in environment"
-		);
+		throw new Error("WALLET_SECRET_KEY not found in environment");
 	}
 
 	const walletKeypair = Keypair.fromSecretKey(
-		Buffer.from(walletSecret, "base64")
+		Buffer.from(walletSecret, "base64"),
 	);
 	const wallet = new Wallet(walletKeypair);
 
 	// 3. Check wallet balance
 	const balance = await connection.getBalance(wallet.publicKey);
-	console.log(
-		`Wallet balance: ${(balance / 1e9).toFixed(4)} SOL`
-	);
+	console.log(`Wallet balance: ${(balance / 1e9).toFixed(4)} SOL`);
 
 	if (balance < 1_000_000) {
-		throw new Error(
-			"Insufficient balance. Need at least 0.001 SOL"
-		);
+		throw new Error("Insufficient balance. Need at least 0.001 SOL");
 	}
 
 	// 4. Initialize SDK
@@ -542,7 +525,7 @@ import {
 async function createPredictionMarket(
 	sdk: CinefiSDK,
 	creator: PublicKey,
-	oracleSet: [PublicKey, PublicKey, PublicKey]
+	oracleSet: [PublicKey, PublicKey, PublicKey],
 ) {
 	const params: CreateMarketParams = {
 		mediaId: BigInt(12345), // Unique identifier (never reused)
@@ -557,7 +540,7 @@ async function createPredictionMarket(
 		const signature = await createMarketAndSend(
 			sdk.program,
 			creator,
-			params
+			params,
 		);
 
 		console.log(`✓ Market created: ${signature}`);
@@ -567,9 +550,7 @@ async function createPredictionMarket(
 
 		return signature;
 	} catch (error) {
-		console.error(
-			`✗ Failed to create market: ${(error as Error).message}`
-		);
+		console.error(`✗ Failed to create market: ${(error as Error).message}`);
 		throw error;
 	}
 }
@@ -591,7 +572,7 @@ async function placePredictionBet(
 	user: PublicKey,
 	mediaId: bigint,
 	bucket: number,
-	solAmount: number
+	solAmount: number,
 ) {
 	// Validate inputs before sending transaction
 	try {
@@ -614,18 +595,12 @@ async function placePredictionBet(
 		console.log(`  Bucket: ${bucket}`);
 		console.log(`  Amount: ${solAmount} SOL`);
 
-		const signature = await placeBetAndSend(
-			sdk.program,
-			user,
-			params
-		);
+		const signature = await placeBetAndSend(sdk.program, user, params);
 
 		console.log(`✓ Bet placed: ${signature}`);
 		return signature;
 	} catch (error) {
-		console.error(
-			`✗ Failed to place bet: ${(error as Error).message}`
-		);
+		console.error(`✗ Failed to place bet: ${(error as Error).message}`);
 		throw error;
 	}
 }
@@ -662,18 +637,10 @@ async function checkMarketStatus(sdk: CinefiSDK, mediaId: bigint) {
 	console.log(`  Can reclaim: ${state.canReclaim}`);
 
 	console.log(`\nMarket Data:`);
-	console.log(
-		`  Created: ${new Date(market.bettingStartsAt * 1000)}`
-	);
-	console.log(
-		`  Betting closes: ${new Date(market.bettingClosesAt * 1000)}`
-	);
-	console.log(
-		`  Settlement: ${new Date(market.settledAt * 1000)}`
-	);
-	console.log(
-		`  Claim deadline: ${new Date(market.claimDeadline * 1000)}`
-	);
+	console.log(`  Created: ${new Date(market.bettingStartsAt * 1000)}`);
+	console.log(`  Betting closes: ${new Date(market.bettingClosesAt * 1000)}`);
+	console.log(`  Settlement: ${new Date(market.settledAt * 1000)}`);
+	console.log(`  Claim deadline: ${new Date(market.claimDeadline * 1000)}`);
 
 	return state;
 }
@@ -707,10 +674,7 @@ const [treasuryPDA, treasuryBump] = deriveTreasuryPDA(programId);
 console.log(`Treasury: ${treasuryPDA.toBase58()}`);
 
 // Oracle Report PDA (derived from market)
-const [oraclePDA, oracleBump] = deriveOracleReportPDA(
-	programId,
-	marketPDA
-);
+const [oraclePDA, oracleBump] = deriveOracleReportPDA(programId, marketPDA);
 console.log(`Oracle Report: ${oraclePDA.toBase58()}`);
 
 // User Position PDA (derived from user, market, bucket)
@@ -718,7 +682,7 @@ const [positionPDA, positionBump] = deriveUserPositionPDA(
 	programId,
 	userPublicKey,
 	marketPDA,
-	bucket
+	bucket,
 );
 console.log(`Position: ${positionPDA.toBase58()}`);
 ```
@@ -735,19 +699,13 @@ Every instruction has TWO variants for flexibility:
 **Purpose:** Sets up the protocol treasury account. Called once at deployment.
 
 ```typescript
-import {
-	initializeTreasury,
-	initializeTreasuryAndSend,
-} from "./app/contract";
+import { initializeTreasury, initializeTreasuryAndSend } from "./app/contract";
 
 // Option 1: Get just the instruction
 const ix = await initializeTreasury(sdk.program, adminPublicKey);
 
 // Option 2: Send directly (simpler)
-const txId = await initializeTreasuryAndSend(
-	sdk.program,
-	adminPublicKey
-);
+const txId = await initializeTreasuryAndSend(sdk.program, adminPublicKey);
 
 console.log(`Treasury initialized: ${txId}`);
 ```
@@ -755,10 +713,11 @@ console.log(`Treasury initialized: ${txId}`);
 **Parameters:** None additional (derives treasury automatically)
 
 **Constraints:**
-- ✓ Can only be called once
-- ✓ Must be called before creating any markets
-- ✓ Requires admin authority
-- ✓ Creates singleton treasury account
+
+-   ✓ Can only be called once
+-   ✓ Must be called before creating any markets
+-   ✓ Requires admin authority
+-   ✓ Creates singleton treasury account
 
 #### Create Market
 
@@ -785,25 +744,27 @@ const txId = await createMarketAndSend(sdk.program, creator, params);
 
 **Parameters:**
 
-| Param | Type | Constraints | Notes |
-|-------|------|-------------|-------|
-| mediaId | bigint | Must be unique | Never reuse for same content |
-| bettingStartsAfter | null \| number | Seconds from now | null=immediate, 3600=1 hour delay |
-| radius | number | 0-100 | Default 5, winnings within ±distance |
-| oracleSet | [PublicKey; 3] | Exactly 3 distinct | From .env oracle keypairs |
-| oracleThreshold | number | 1-3 | Default 2, min to reach consensus |
+| Param              | Type           | Constraints        | Notes                                |
+| ------------------ | -------------- | ------------------ | ------------------------------------ |
+| mediaId            | bigint         | Must be unique     | Never reuse for same content         |
+| bettingStartsAfter | null \| number | Seconds from now   | null=immediate, 3600=1 hour delay    |
+| radius             | number         | 0-100              | Default 5, winnings within ±distance |
+| oracleSet          | [PublicKey; 3] | Exactly 3 distinct | From .env oracle keypairs            |
+| oracleThreshold    | number         | 1-3                | Default 2, min to reach consensus    |
 
 **What Gets Created Automatically:**
-- Market account (stores parameters + state)
-- Vault account (holds betting pool)
-- Oracle Report account (tracks oracle submissions)
+
+-   Market account (stores parameters + state)
+-   Vault account (holds betting pool)
+-   Oracle Report account (tracks oracle submissions)
 
 **Constraints:**
-- ✓ mediaId must be unique (no duplicate markets)
-- ✓ Exactly 3 oracle signers (not 2, not 4)
-- ✓ radius must be 0-100
-- ✓ oracleThreshold must be 1-3
-- ✓ Creates Market, Vault, and OracleReport PDAs
+
+-   ✓ mediaId must be unique (no duplicate markets)
+-   ✓ Exactly 3 oracle signers (not 2, not 4)
+-   ✓ radius must be 0-100
+-   ✓ oracleThreshold must be 1-3
+-   ✓ Creates Market, Vault, and OracleReport PDAs
 
 #### Place Bet
 
@@ -834,29 +795,27 @@ const txId = await placeBetAndSend(sdk.program, bettor, params);
 
 **Parameters:**
 
-| Param | Type | Constraints | Notes |
-|-------|------|-------------|-------|
-| mediaId | bigint | Market must exist | Get from createMarket |
-| bucket | number | 0-100 inclusive | Integer, 101 total buckets |
-| amount | bigint | > 0 lamports | Use solToLamports() helper |
+| Param   | Type   | Constraints       | Notes                      |
+| ------- | ------ | ----------------- | -------------------------- |
+| mediaId | bigint | Market must exist | Get from createMarket      |
+| bucket  | number | 0-100 inclusive   | Integer, 101 total buckets |
+| amount  | bigint | > 0 lamports      | Use solToLamports() helper |
 
 **Constraints:**
-- ✓ Betting window must be open (day 1-14)
-- ✓ bucket must be 0-100 (use validateBucket)
-- ✓ amount must be > 0 (use validateAmount)
-- ✓ User wallet must have sufficient balance
-- ✓ Each bucket creates separate position account
-- ✓ Can make multiple bets in same bucket (accumulates)
+
+-   ✓ Betting window must be open (day 1-14)
+-   ✓ bucket must be 0-100 (use validateBucket)
+-   ✓ amount must be > 0 (use validateAmount)
+-   ✓ User wallet must have sufficient balance
+-   ✓ Each bucket creates separate position account
+-   ✓ Can make multiple bets in same bucket (accumulates)
 
 #### Close Market
 
 **Purpose:** Closes the betting window. After 14 days, anyone can call.
 
 ```typescript
-import {
-	closeMarket,
-	closeMarketAndSend,
-} from "./app/contract";
+import { closeMarket, closeMarketAndSend } from "./app/contract";
 
 const txId = await closeMarketAndSend(sdk.program, caller, mediaId);
 console.log(`Market closed: ${txId}`);
@@ -864,14 +823,15 @@ console.log(`Market closed: ${txId}`);
 
 **Parameters:**
 
-| Param | Type | Constraints | Notes |
-|-------|------|-------------|-------|
+| Param   | Type   | Constraints       | Notes             |
+| ------- | ------ | ----------------- | ----------------- |
 | mediaId | bigint | Market must exist | From createMarket |
 
 **Constraints:**
-- ✓ Current time ≥ bettingClosesAt (day 14+)
-- ✓ Can be called by anyone (permissionless)
-- ✓ Idempotent (safe to call multiple times)
+
+-   ✓ Current time ≥ bettingClosesAt (day 14+)
+-   ✓ Can be called by anyone (permissionless)
+-   ✓ Idempotent (safe to call multiple times)
 
 #### Submit Score (Oracle Only)
 
@@ -896,7 +856,7 @@ const params: SubmitScoreParams = {
 const txId = await submitScoreAndSend(
 	sdk.program,
 	oracle1Keypair, // From .env ORACLE_1_SECRET_KEY
-	params
+	params,
 );
 
 console.log(`Score submitted: ${txId}`);
@@ -904,37 +864,36 @@ console.log(`Score submitted: ${txId}`);
 
 **Parameters:**
 
-| Param | Type | Constraints | Notes |
-|-------|------|-------------|-------|
-| mediaId | bigint | Market must exist | From createMarket |
-| score | number | 0-100 | Integer, same as bucket range |
+| Param   | Type   | Constraints       | Notes                         |
+| ------- | ------ | ----------------- | ----------------------------- |
+| mediaId | bigint | Market must exist | From createMarket             |
+| score   | number | 0-100             | Integer, same as bucket range |
 
 **Important:**
-- Must sign with oracle keypair from market's oracle_set
-- Each oracle can submit once (duplicate overwrites)
-- Window: day 21 to day 21 + 1 hour
-- All 3 oracles can submit, but only 2+ needed for consensus
+
+-   Must sign with oracle keypair from market's oracle_set
+-   Each oracle can submit once (duplicate overwrites)
+-   Window: day 21 to day 21 + 1 hour
+-   All 3 oracles can submit, but only 2+ needed for consensus
 
 **Constraints:**
-- ✓ Must be called by oracle in oracle_set
-- ✓ Window: day 21 to day 21 + 1 hour only
-- ✓ One submission per oracle (overwrites previous)
-- ✓ score must be 0-100
+
+-   ✓ Must be called by oracle in oracle_set
+-   ✓ Window: day 21 to day 21 + 1 hour only
+-   ✓ One submission per oracle (overwrites previous)
+-   ✓ score must be 0-100
 
 #### Resolve Market
 
 **Purpose:** Finalizes market with oracle consensus. After oracle window.
 
 ```typescript
-import {
-	resolveMarket,
-	resolveMarketAndSend,
-} from "./app/contract";
+import { resolveMarket, resolveMarketAndSend } from "./app/contract";
 
 const txId = await resolveMarketAndSend(
 	sdk.program,
 	resolver, // Anyone can resolve
-	mediaId
+	mediaId,
 );
 
 console.log(`Market resolved: ${txId}`);
@@ -942,11 +901,12 @@ console.log(`Market resolved: ${txId}`);
 
 **Parameters:**
 
-| Param | Type | Constraints | Notes |
-|-------|------|-------------|-------|
+| Param   | Type   | Constraints       | Notes             |
+| ------- | ------ | ----------------- | ----------------- |
 | mediaId | bigint | Market must exist | From createMarket |
 
 **What Happens on Resolve:**
+
 1. Checks oracle report is finalized (2+ submissions)
 2. Determines final score (most common among submissions)
 3. Calculates rewards for each winning bucket
@@ -956,29 +916,27 @@ console.log(`Market resolved: ${txId}`);
 7. Stores reward amounts in UserPosition accounts
 
 **Constraints:**
-- ✓ Oracle report must be finalized (2+ oracle submissions)
-- ✓ Must be after oracle submission window
-- ✓ Calculates rewards considering:
-  - Bucket proximity (within radius)
-  - Time multiplier (early betting bonus)
-  - Bet amount proportion
-  - Fee deductions
+
+-   ✓ Oracle report must be finalized (2+ oracle submissions)
+-   ✓ Must be after oracle submission window
+-   ✓ Calculates rewards considering:
+    -   Bucket proximity (within radius)
+    -   Time multiplier (early betting bonus)
+    -   Bet amount proportion
+    -   Fee deductions
 
 #### Claim Reward
 
 **Purpose:** Winners claim their prize. Within 14-day claim window.
 
 ```typescript
-import {
-	claimReward,
-	claimRewardAndSend,
-} from "./app/contract";
+import { claimReward, claimRewardAndSend } from "./app/contract";
 
 const txId = await claimRewardAndSend(
 	sdk.program,
 	winner, // User claiming
 	mediaId,
-	winningBucket // Bucket they bet on
+	winningBucket, // Bucket they bet on
 );
 
 console.log(`Reward claimed: ${txId}`);
@@ -986,32 +944,30 @@ console.log(`Reward claimed: ${txId}`);
 
 **Parameters:**
 
-| Param | Type | Constraints | Notes |
-|-------|------|-------------|-------|
-| mediaId | bigint | Market must exist | From createMarket |
-| bucket | number | 0-100, user must have bet | Bucket user predicted |
+| Param   | Type   | Constraints               | Notes                 |
+| ------- | ------ | ------------------------- | --------------------- |
+| mediaId | bigint | Market must exist         | From createMarket     |
+| bucket  | number | 0-100, user must have bet | Bucket user predicted |
 
 **Constraints:**
-- ✓ Market must be resolved
-- ✓ User must have position in bucket
-- ✓ Outcome ∈ [bucket - radius, bucket + radius]
-- ✓ Only before claim deadline (day 35)
-- ✓ Can only claim each position once
+
+-   ✓ Market must be resolved
+-   ✓ User must have position in bucket
+-   ✓ Outcome ∈ [bucket - radius, bucket + radius]
+-   ✓ Only before claim deadline (day 35)
+-   ✓ Can only claim each position once
 
 #### Reclaim Pool
 
 **Purpose:** Treasury reclaims unclaimed funds. After 14-day claim deadline.
 
 ```typescript
-import {
-	reclaimPool,
-	reclaimPoolAndSend,
-} from "./app/contract";
+import { reclaimPool, reclaimPoolAndSend } from "./app/contract";
 
 const txId = await reclaimPoolAndSend(
 	sdk.program,
 	reclaimer, // Anyone can trigger
-	mediaId
+	mediaId,
 );
 
 console.log(`Unclaimed funds reclaimed to treasury: ${txId}`);
@@ -1019,15 +975,16 @@ console.log(`Unclaimed funds reclaimed to treasury: ${txId}`);
 
 **Parameters:**
 
-| Param | Type | Constraints | Notes |
-|-------|------|-------------|-------|
+| Param   | Type   | Constraints       | Notes             |
+| ------- | ------ | ----------------- | ----------------- |
 | mediaId | bigint | Market must exist | From createMarket |
 
 **Constraints:**
-- ✓ Current time > claimDeadline (day 35+)
-- ✓ Only unclaimed funds transferred
-- ✓ Already claimed funds unaffected
-- ✓ Protocol and creator fees already deducted
+
+-   ✓ Current time > claimDeadline (day 35+)
+-   ✓ Only unclaimed funds transferred
+-   ✓ Already claimed funds unaffected
+-   ✓ Protocol and creator fees already deducted
 
 ### Account Fetching (Complete Guide)
 
@@ -1059,12 +1016,7 @@ if (report) {
 }
 
 // Single user position
-const position = await fetchUserPosition(
-	sdk.program,
-	user,
-	marketKey,
-	bucket
-);
+const position = await fetchUserPosition(sdk.program, user, marketKey, bucket);
 if (position) {
 	console.log(`Bet amount: ${position.amount}`);
 }
@@ -1073,7 +1025,7 @@ if (position) {
 const allPositions = await fetchUserPositionsForMarket(
 	sdk.program,
 	user,
-	marketKey
+	marketKey,
 );
 console.log(`Total positions: ${allPositions.length}`);
 
@@ -1204,7 +1156,7 @@ console.log(`Day 14 multiplier: ${getTimeMultiplier(14) / 1000}`); // 0.272
 const daysLeft = calculateDaysRemaining(
 	market.bettingStartsAt,
 	market.bettingClosesAt,
-	now
+	now,
 );
 console.log(`Days left to bet: ${daysLeft}`);
 ```
@@ -1308,41 +1260,41 @@ try {
 ```typescript
 enum CinefiErrorCode {
 	// Market State Errors (6000-6004)
-	MarketAlreadyClosed = 6000,      // Market is already closed
-	MarketNotClosed = 6001,          // Market is not yet closed
-	MarketNotResolved = 6002,        // Market is not yet resolved
-	MarketAlreadyResolved = 6003,    // Market is already resolved
-	BettingNotStarted = 6004,        // Betting window not started
+	MarketAlreadyClosed = 6000, // Market is already closed
+	MarketNotClosed = 6001, // Market is not yet closed
+	MarketNotResolved = 6002, // Market is not yet resolved
+	MarketAlreadyResolved = 6003, // Market is already resolved
+	BettingNotStarted = 6004, // Betting window not started
 
 	// Betting Phase Errors (6005-6007)
-	BettingClosed = 6005,            // Betting window is closed
-	BettingStillOpen = 6006,         // Betting is still open
-	SettlementNotReady = 6007,       // Settlement period not reached
+	BettingClosed = 6005, // Betting window is closed
+	BettingStillOpen = 6006, // Betting is still open
+	SettlementNotReady = 6007, // Settlement period not reached
 
 	// Settlement Timing Errors (6008-6009)
-	SettlementTimeInvalid = 6008,    // Invalid settlement time
-	ClaimDeadlinePassed = 6009,      // Claim period has ended
+	SettlementTimeInvalid = 6008, // Invalid settlement time
+	ClaimDeadlinePassed = 6009, // Claim period has ended
 
 	// Oracle Window Errors (6010-6018)
-	OracleWindowClosed = 6010,       // Oracle submission window closed
-	ClaimDeadlineNotPassed = 6011,   // Claim deadline not yet passed
-	UnauthorizedOracle = 6012,       // Not a designated oracle
-	OracleAlreadyFinalized = 6013,   // Oracle report finalized
-	OracleNotFinalized = 6014,       // Oracle report not finalized
-	OracleAlreadySubmitted = 6015,   // Oracle already submitted score
-	OracleDisputed = 6016,           // Oracle submission disputed
+	OracleWindowClosed = 6010, // Oracle submission window closed
+	ClaimDeadlineNotPassed = 6011, // Claim deadline not yet passed
+	UnauthorizedOracle = 6012, // Not a designated oracle
+	OracleAlreadyFinalized = 6013, // Oracle report finalized
+	OracleNotFinalized = 6014, // Oracle report not finalized
+	OracleAlreadySubmitted = 6015, // Oracle already submitted score
+	OracleDisputed = 6016, // Oracle submission disputed
 
 	// Input Validation Errors (6019-6024)
-	InvalidBucket = 6019,            // Bucket not in range 0-100
-	InvalidAmount = 6020,            // Amount must be > 0
-	AlreadyClaimed = 6021,           // Reward already claimed
-	NotAWinner = 6022,               // User is not within winning range
-	InsufficientClaimAmount = 6023,  // Insufficient claimable amount
-	Unauthorized = 6024,             // Unauthorized action
+	InvalidBucket = 6019, // Bucket not in range 0-100
+	InvalidAmount = 6020, // Amount must be > 0
+	AlreadyClaimed = 6021, // Reward already claimed
+	NotAWinner = 6022, // User is not within winning range
+	InsufficientClaimAmount = 6023, // Insufficient claimable amount
+	Unauthorized = 6024, // Unauthorized action
 
 	// Math Errors (6025-6026)
-	MathOverflow = 6025,             // Math overflow occurred
-	MathUnderflow = 6026,            // Math underflow occurred
+	MathOverflow = 6025, // Math overflow occurred
+	MathUnderflow = 6026, // Math underflow occurred
 }
 
 // Lookup error messages
@@ -1357,12 +1309,7 @@ const message = ERROR_MESSAGES[CinefiErrorCode.BettingClosed];
 
 ```typescript
 import dotenv from "dotenv";
-import {
-	Connection,
-	Keypair,
-	PublicKey,
-	clusterApiUrl,
-} from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import { Wallet } from "@coral-xyz/anchor";
 import CinefiSDK, {
 	createMarketAndSend,
@@ -1383,19 +1330,19 @@ async function completeMarketLifecycle() {
 	console.log("=== SETUP ===");
 	const connection = new Connection(clusterApiUrl("devnet"));
 	const creatorKp = Keypair.fromSecretKey(
-		Buffer.from(process.env.WALLET_SECRET_KEY!, "base64")
+		Buffer.from(process.env.WALLET_SECRET_KEY!, "base64"),
 	);
 	const bettor1Kp = Keypair.fromSecretKey(
-		Buffer.from(process.env.BETTOR1_SECRET_KEY!, "base64")
+		Buffer.from(process.env.BETTOR1_SECRET_KEY!, "base64"),
 	);
 	const oracle1Kp = Keypair.fromSecretKey(
-		Buffer.from(process.env.ORACLE_1_SECRET_KEY!, "base64")
+		Buffer.from(process.env.ORACLE_1_SECRET_KEY!, "base64"),
 	);
 	const oracle2Kp = Keypair.fromSecretKey(
-		Buffer.from(process.env.ORACLE_2_SECRET_KEY!, "base64")
+		Buffer.from(process.env.ORACLE_2_SECRET_KEY!, "base64"),
 	);
 	const oracle3Kp = Keypair.fromSecretKey(
-		Buffer.from(process.env.ORACLE_3_SECRET_KEY!, "base64")
+		Buffer.from(process.env.ORACLE_3_SECRET_KEY!, "base64"),
 	);
 
 	const wallet = new Wallet(creatorKp);
@@ -1408,17 +1355,21 @@ async function completeMarketLifecycle() {
 	console.log("\n=== CREATE MARKET ===");
 	const mediaId = BigInt(Math.floor(Math.random() * 1_000_000));
 
-	const createTx = await createMarketAndSend(sdk.program, creatorKp.publicKey, {
-		mediaId,
-		bettingStartsAfter: null,
-		radius: 5,
-		oracleSet: [
-			oracle1Kp.publicKey,
-			oracle2Kp.publicKey,
-			oracle3Kp.publicKey,
-		],
-		oracleThreshold: 2,
-	});
+	const createTx = await createMarketAndSend(
+		sdk.program,
+		creatorKp.publicKey,
+		{
+			mediaId,
+			bettingStartsAfter: null,
+			radius: 5,
+			oracleSet: [
+				oracle1Kp.publicKey,
+				oracle2Kp.publicKey,
+				oracle3Kp.publicKey,
+			],
+			oracleThreshold: 2,
+		},
+	);
 
 	console.log(`✓ Market created: ${createTx}`);
 	console.log(`  Media ID: ${mediaId}`);
@@ -1440,7 +1391,7 @@ async function completeMarketLifecycle() {
 	const closeTx = await closeMarketAndSend(
 		sdk.program,
 		creatorKp.publicKey,
-		mediaId
+		mediaId,
 	);
 	console.log(`✓ Market closed: ${closeTx}`);
 	await connection.confirmTransaction(closeTx);
@@ -1467,7 +1418,7 @@ async function completeMarketLifecycle() {
 	const resolveTx = await resolveMarketAndSend(
 		sdk.program,
 		creatorKp.publicKey,
-		mediaId
+		mediaId,
 	);
 	console.log(`✓ Market resolved: ${resolveTx}`);
 	await connection.confirmTransaction(resolveTx);
@@ -1478,7 +1429,7 @@ async function completeMarketLifecycle() {
 		sdk.program,
 		bettor1Kp.publicKey,
 		mediaId,
-		70 // User bet on bucket 70
+		70, // User bet on bucket 70
 	);
 	console.log(`✓ Reward claimed: ${claimTx}`);
 	await connection.confirmTransaction(claimTx);
@@ -1493,16 +1444,16 @@ completeMarketLifecycle().catch(console.error);
 
 ### Common Errors and Solutions
 
-| Error Code | Error | Cause | Solution |
-|-----------|-------|-------|----------|
-| 6005 | BettingClosed | Betting window passed | Check with `isBettingOpen()` before betting |
-| 6019 | InvalidBucket | Bucket not 0-100 | Use `validateBucket(bucket)` before submitting |
-| 6020 | InvalidAmount | Amount ≤ 0 | Ensure amount > 0, use `validateAmount()` |
-| 6012 | UnauthorizedOracle | Non-oracle submitting | Use oracle keypair from oracle_set |
-| 6009 | ClaimDeadlinePassed | Past day 35 | Check `state.canClaim` before claiming |
-| 6022 | NotAWinner | Outside winning range | Check `isWinningBucket()` before claiming |
-| 6001 | MarketNotClosed | Trying to submit before close | Call closeMarket first |
-| 6014 | OracleNotFinalized | Insufficient submissions | Wait for 2 oracles to submit |
+| Error Code | Error               | Cause                         | Solution                                       |
+| ---------- | ------------------- | ----------------------------- | ---------------------------------------------- |
+| 6005       | BettingClosed       | Betting window passed         | Check with `isBettingOpen()` before betting    |
+| 6019       | InvalidBucket       | Bucket not 0-100              | Use `validateBucket(bucket)` before submitting |
+| 6020       | InvalidAmount       | Amount ≤ 0                    | Ensure amount > 0, use `validateAmount()`      |
+| 6012       | UnauthorizedOracle  | Non-oracle submitting         | Use oracle keypair from oracle_set             |
+| 6009       | ClaimDeadlinePassed | Past day 35                   | Check `state.canClaim` before claiming         |
+| 6022       | NotAWinner          | Outside winning range         | Check `isWinningBucket()` before claiming      |
+| 6001       | MarketNotClosed     | Trying to submit before close | Call closeMarket first                         |
+| 6014       | OracleNotFinalized  | Insufficient submissions      | Wait for 2 oracles to submit                   |
 
 ### Error Recovery Pattern
 
@@ -1512,7 +1463,7 @@ async function safePlaceBet(
 	user: PublicKey,
 	mediaId: bigint,
 	bucket: number,
-	amount: bigint
+	amount: bigint,
 ): Promise<string | null> {
 	// 1. Validate inputs locally
 	try {
@@ -1549,7 +1500,7 @@ async function safePlaceBet(
 		const cinefiError = parseCinefiError(error);
 		if (cinefiError) {
 			console.error(
-				`Program error (${cinefiError.code}): ${cinefiError.message}`
+				`Program error (${cinefiError.code}): ${cinefiError.message}`,
 			);
 		} else {
 			console.error(`Transaction failed: ${(error as Error).message}`);
