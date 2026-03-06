@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Network {
+  mainnet
+  devnet
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+/// One row per on-chain Market PDA.
+/// Updated in-place on every state-changing instruction.
+model Market {
+  /// Market PDA pubkey (base58)
+  id String @id
+
+  /// Unique media/film identifier (u64 on-chain)
+  mediaId BigInt
+
+  /// Creator wallet (base58)
+  creator String
+
+  // ── Timestamps (derived from on-chain i64 Unix seconds) ─────────────────
+  createdAt       DateTime
+  bettingStartsAt DateTime
+  bettingClosesAt DateTime
+  settleAt        DateTime
+  claimDeadline   DateTime
+
+  // ── Configuration ────────────────────────────────────────────────────────
+  /// Max distance from final_outcome that counts as a win
+  radius         Int
+  /// Protocol fee in basis points (e.g. 300 = 3%)
+  protocolFeeBps Int
+  /// Creator fee in basis points (currently always 0)
+  creatorFeeBps  Int
+
+  // ── Oracle set (3 pubkeys stored as JSON array of base58 strings) ────────
+  oracleSet       String[]
+  oracleThreshold Int
+
+  // ── Pool summary ─────────────────────────────────────────────────────────
+  totalPool      BigInt @default(0)
+  totalPrizePool BigInt @default(0)
+  /// Total number of individual bets placed
+  totalBetCount  Int    @default(0)
+
+  // ── Resolution ───────────────────────────────────────────────────────────
+  /// null until market is resolved
+  finalOutcome Int?
+  fallbackUsed Boolean @default(false)
+
+  // ── State flags ──────────────────────────────────────────────────────────
+  resolved  Boolean @default(false)
+  closed    Boolean @default(false)
+  reclaimed Boolean @default(false)
+
+  // ── Indexer metadata ─────────────────────────────────────────────────────
+  network         Network
+  lastTxSignature String?
+  indexedAt       DateTime @default(now())
+  lastUpdatedAt   DateTime @updatedAt
+
+  // ── Relations ────────────────────────────────────────────────────────────
+  positions    UserPosition[]
+  oracleReport OracleReport?
+  /// Sparse: only buckets with non-zero staked SOL
+  bucketPools  BucketPool[]
+  /// Sparse: only populated after resolve_market; only winning buckets
+  bucketPrizes BucketPrize[]
+  transactions IndexerTransaction[]
+
+  @@index([mediaId, network])
+  @@index([creator])
+  @@index([network])
+}
+
+/// One row per UserPosition PDA (user × market × bucket).
+model UserPosition {
+  /// UserPosition PDA pubkey (base58)
+  id String @id
+
+  /// Bettor wallet (base58)
+  user String
+
+  /// FK to Market.id
+  marketId String
+
+  /// Bucket the user bet on (1-100)
+  bucket Int
+
+  /// Raw lamports staked
+  amount BigInt
+
+  /// Time-decay weighted lamports
+  weightedAmount BigInt
+
+  claimed Boolean @default(false)
+
+  network         Network
+  lastTxSignature String?
+  indexedAt       DateTime @default(now())
+  lastUpdatedAt   DateTime @updatedAt
+
+  market Market @relation(fields: [marketId], references: [id])
+
+  @@unique([user, marketId, bucket, network])
+  @@index([user, network])
+  @@index([marketId])
+}
+
+/// One row per OracleReport PDA (one per market).
+model OracleReport {
+  /// OracleReport PDA pubkey (base58)
+  id String @id
+
+  /// FK to Market.id (1-to-1)
+  marketId String @unique
+
+  submissionCount Int @default(0)
+
+  /// null until oracles agree and report is finalised
+  agreedScore Int?
+
+  finalized Boolean @default(false)
+  disputed  Boolean @default(false)
+
+  network         Network
+  lastTxSignature String?
+  indexedAt       DateTime @default(now())
+  lastUpdatedAt   DateTime @updatedAt
+
+  market      Market             @relation(fields: [marketId], references: [id])
+  submissions OracleSubmission[]
+}
+
+/// Individual oracle score submissions.
+model OracleSubmission {
+  id String @id @default(cuid())
+
+  /// FK to OracleReport.id
+  oracleReportId String
+
+  /// Oracle signer wallet (base58)
+  signer String
+
+  /// Submitted score (0-100)
+  score Int
+
+  network   Network
+  createdAt DateTime @default(now())
+
+  oracleReport OracleReport @relation(fields: [oracleReportId], references: [id])
+
+  @@unique([oracleReportId, signer])
+  @@index([oracleReportId])
+}
+
+/// Append-only audit log of every processed transaction.
+model IndexerTransaction {
+  /// Solana transaction signature (base58)
+  id String @id
+
+  slot      BigInt
+  timestamp DateTime
+
+  /// Fee-payer / signer of the transaction
+  feePayer String
+
+  /// Decoded instruction name (e.g. "create_market")
+  instruction String
+
+  /// Market affected by this transaction (null for initialize_treasury)
+  marketId String?
+
+  network Network
+  success Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  market Market? @relation(fields: [marketId], references: [id])
+
+  @@index([instruction, network])
+  @@index([feePayer])
+  @@index([marketId])
+}
+
+/// Sparse snapshot of the on-chain pool[] array.
+/// One row per bucket that has at least 1 lamport staked.
+/// Upserted on every place_bet.
+model BucketPool {
+  id String @id @default(cuid())
+
+  marketId       String
+  /// Bucket index (1-100)
+  bucket         Int
+  /// Raw lamports staked in this bucket
+  amount         BigInt
+  /// Time-decay weighted lamports
+  weightedAmount BigInt
+
+  network       Network
+  lastUpdatedAt DateTime @updatedAt
+
+  market Market @relation(fields: [marketId], references: [id])
+
+  @@unique([marketId, bucket, network])
+  @@index([marketId])
+}
+
+/// Sparse snapshot of the on-chain bucket_prize[] array after resolve_market.
+/// One row per bucket that has a non-zero prize (i.e. winning buckets).
+model BucketPrize {
+  id String @id @default(cuid())
+
+  marketId String
+  /// Bucket index (1-100)
+  bucket   Int
+  /// Prize allocated to this bucket (lamports)
+  prize    BigInt
+
+  network Network
+
+  market Market @relation(fields: [marketId], references: [id])
+
+  @@unique([marketId, bucket, network])
+  @@index([marketId])
+}
