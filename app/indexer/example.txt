@@ -1,0 +1,164 @@
+1. envelop: common to all events
+{
+  "eventType": "...",
+  "network": "mainnet" | "devnet",
+  "signature": "5KtPn1...abc",
+  "slot": 312847291,
+  "timestamp": 1741305600,
+  "marketId": "7xR3...PDA"   // omitted on initialize_treasury
+}
+
+2. create market
+{
+  "eventType": "create_market",
+  "network": "devnet",
+  "signature": "5KtPn1...",
+  "slot": 312847291,
+  "timestamp": 1741305600,
+  "marketId": "7xR3...marketPDA",
+  "data": {
+    "market": {
+      "pubkey": "7xR3...marketPDA",
+      "mediaId": "tt1234567",
+      "creator": "AxB2...wallet",
+      "createdAt": 1741305600,
+      "bettingStartsAt": 1741305600,
+      "bettingClosesAt": 1741392000,
+      "settleAt": 1741478400,
+      "claimDeadline": 1742083200,
+      "radius": 2,
+      "protocolFeeBps": 200,
+      "creatorFeeBps": 100,
+      "oracleSet": ["Or1...pubkey", "Or2...pubkey"],
+      "oracleThreshold": 2,
+      "totalPool": "0",
+      "totalPrizePool": "0",
+      "finalOutcome": null,
+      "fallbackUsed": false,
+      "resolved": false,
+      "closed": false,
+      "reclaimed": false
+    },
+    "oracleReport": {
+      "pubkey": "9pQ...reportPDA",
+      "market": "7xR3...marketPDA",
+      "submissionCount": 0,
+      "submissions": [],
+      "agreedScore": null,
+      "finalized": false,
+      "disputed": false
+    }
+  }
+}
+
+3. place bet
+{
+  "eventType": "place_bet",
+  "network": "devnet",
+  "signature": "3Hm...",
+  "slot": 312850000,
+  "timestamp": 1741310000,
+  "marketId": "7xR3...marketPDA",
+  "data": {
+    "market": { ...same MarketData shape, totalPool updated... },
+    "position": {
+      "pubkey": "4kJ...positionPDA",
+      "user": "AxB2...wallet",
+      "market": "7xR3...marketPDA",
+      "bucket": 7,
+      "amount": "5000000000",         // lamports as string (BigInt)
+      "weightedAmount": "4750000000", // lamports as string (BigInt)
+      "claimed": false
+    },
+    "bucketPool": {
+      "bucket": 7,
+      "amount": "5000000000",
+      "weightedAmount": "4750000000"
+    }
+  }
+}
+
+4. submit score
+{
+  "eventType": "submit_score",
+  "network": "devnet",
+  "signature": "9Zz...",
+  "slot": 312860000,
+  "timestamp": 1741480000,
+  "marketId": "7xR3...marketPDA",
+  "data": {
+    "oracleReport": {
+      "pubkey": "9pQ...reportPDA",
+      "market": "7xR3...marketPDA",
+      "submissionCount": 1,
+      "submissions": [
+        { "signer": "Or1...pubkey", "score": 78 }
+      ],
+      "agreedScore": null,
+      "finalized": false,
+      "disputed": false
+    }
+  }
+}
+
+5.resolve market
+{
+  "eventType": "resolve_market",
+  "network": "devnet",
+  "signature": "2Wq...",
+  "slot": 312870000,
+  "timestamp": 1741490000,
+  "marketId": "7xR3...marketPDA",
+  "data": {
+    "market": { ...MarketData, resolved: true, finalOutcome: 78... },
+    "oracleReport": { ...OracleReportData, agreedScore: 78, finalized: true... },
+    "bucketPrizes": [
+      { "bucket": 7, "prize": "22800000000" },
+      { "bucket": 8, "prize": "1200000000" }
+    ]
+  }
+}
+
+6.claim reward
+{
+  "eventType": "claim_reward",
+  "network": "devnet",
+  "signature": "8Lp...",
+  "slot": 312880000,
+  "timestamp": 1741500000,
+  "marketId": "7xR3...marketPDA",
+  "data": {
+    "position": {
+      "pubkey": "4kJ...positionPDA",
+      "user": "AxB2...wallet",
+      "market": "7xR3...marketPDA",
+      "bucket": 7,
+      "amount": "5000000000",
+      "weightedAmount": "4750000000",
+      "claimed": true
+    }
+  }
+}
+
+7. close market/reclaim pool
+{
+  "eventType": "close_market",   // or "reclaim_pool"
+  "network": "devnet",
+  "signature": "...",
+  "slot": 312890000,
+  "timestamp": 1741510000,
+  "marketId": "7xR3...marketPDA",
+  "data": {
+    "market": { ...MarketData, closed: true... }
+  }
+}
+
+8. initialize treasury
+{
+  "eventType": "initialize_treasury",
+  "network": "devnet",
+  "signature": "...",
+  "slot": 312800000,
+  "timestamp": 1741300000,
+  "data": {}
+}
